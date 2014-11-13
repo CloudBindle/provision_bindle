@@ -1,0 +1,32 @@
+---
+
+- name: Install NTP
+  apt: name=ntp state=latest
+
+- name: Start NTP on boot
+  service: name=ntp state=started enabled=yes
+
+
+- name: Create working dir
+  file: path=/home/{{ user_name }}/architecture2 state=directory owner={{ user_name }} group={{ user_name }}
+
+- name: Checkout the Bindle git repo
+  git: repo=https://github.com/CloudBindle/Bindle
+       dest=/home/{{ user_name }}/architecture2
+       version={{ bindle_git_branch }}
+
+- name: Checkout the Seqware git repo
+  git: repo=https://github.com/SeqWare/seqware-bag.git
+       dest=/home/{{ user_name }}/architecture2
+       version={{ seqware_git_branch }}
+
+- name: Checkout the pancancer-bag git repo
+  git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
+       dest=/home/{{ user_name }}/architecture2
+       version={{ pancancer_bag_git_branch }}
+
+- name: Checkout the monitoring-bag git repo
+  git: repo=https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
+       dest=/home/{{ user_name }}/architecture2
+       version={{ monitoring_bag_git_branch }}
+
