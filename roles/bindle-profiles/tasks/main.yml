@@ -12,21 +12,21 @@
 
 - name: Checkout the Bindle git repo
   git: repo=https://github.com/CloudBindle/Bindle
-       dest=/home/{{ user_name }}/architecture2
+       dest=/home/{{ user_name }}/architecture2/Bindle
        version={{ bindle_git_branch }}
 
 - name: Checkout the Seqware git repo
   git: repo=https://github.com/SeqWare/seqware-bag.git
-       dest=/home/{{ user_name }}/architecture2
+       dest=/home/{{ user_name }}/architecture2/seqware-bag
        version={{ seqware_bag_git_branch }}
 
 - name: Checkout the pancancer-bag git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
-       dest=/home/{{ user_name }}/architecture2
+       dest=/home/{{ user_name }}/architecture2/pancancer-bag
        version={{ pancancer_bag_git_branch }}
 
 - name: Checkout the monitoring-bag git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
-       dest=/home/{{ user_name }}/architecture2
+       dest=/home/{{ user_name }}/architecture2/monitoring-bag
        version={{ monitoring_bag_git_branch }}
 
