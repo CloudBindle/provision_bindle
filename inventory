@@ -1,2 +1,5 @@
 [bindle]
-bindle	ansible_ssh_host=1.2.3.4	ansible_ssh_user=ubuntu	ansible_ssh_private_key_file=/root/X.pem
+# you would change this if you connect to a remote machine
+#bindle	ansible_ssh_host=1.2.3.4	ansible_ssh_user=ubuntu	ansible_ssh_private_key_file=/root/X.pem
+# default config is for localhost to be setup
+bindle	ansible_connection=local
