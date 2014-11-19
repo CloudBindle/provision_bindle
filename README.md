@@ -10,15 +10,15 @@ The result is a host that can be used to create new SeqWare images with pancance
 * [Bindle](https://github.com/CloudBindle/Bindle)
 * [Seqware-bag](https://github.com/SeqWare/seqware-bag.git)
 * [Pancancer-bag](https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git)
-* [Monitoriing-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
+* [Monitoring-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
 
 ## Setup
 
 This playbook relies upon bindle's install playbook. 
 
+    sudo apt-get install git
     git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
     cd architecture-setup
-    sudo apt-get install git
     sudo apt-get install python-software-properties
     sudo add-apt-repository ppa:rquillo/ansible
     sudo apt-get update
