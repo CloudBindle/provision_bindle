@@ -5,6 +5,13 @@ This tool is used to install Bindle and all of its dependencies pertaining to th
 This will likely grow to include youxia and all other infrastructure used specifically by pancancer. 
 The result is a host that can be used to create new SeqWare images with pancancer workflows pre-installed.
 
+###Sets up the following on the desired node(s)
+
+* [Bindle](https://github.com/CloudBindle/Bindle)
+* [Seqware-bag](https://github.com/SeqWare/seqware-bag.git)
+* [Pancancer-bag](https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git)
+* [Monitoriing-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
+
 ## Setup
 
 This playbook relies upon bindle's install playbook. 
