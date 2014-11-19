@@ -9,6 +9,8 @@ The result is a host that can be used to create new SeqWare images with pancance
 
 This playbook relies upon bindle's install playbook. 
 
+    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
+    cd architecture-setup
     sudo apt-get install git
     sudo apt-get install python-software-properties
     sudo add-apt-repository ppa:rquillo/ansible
