@@ -23,7 +23,7 @@ This playbook relies upon bindle's install playbook.
     sudo add-apt-repository ppa:rquillo/ansible
     sudo apt-get update
     sudo apt-get install ansible
-    git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
+    git clone -b 2.0-alpha.2 https://github.com/CloudBindle/Bindle.git playbooks/Bindle
     
 You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem dest=/home/ubuntu/.ssh/gnostest.pem
 
