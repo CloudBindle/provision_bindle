@@ -21,10 +21,14 @@ This playbook relies upon bindle's install playbook.
     cd architecture-setup 
     bash setup.sh
     
-You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem dest=/home/ubuntu/.ssh/gnostest.pem
+You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem 
 
 ## Running 
 
-You will need to edit uour inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host. 
+If you wish to setup the host your are currently on as a launcher host, skip directly to the command below. 
+
+If you wish to setup some other host, you will need to edit uour inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host. 
         
     ansible-playbook -i inventory site.yml
+
+Navigate to ~/architecture2 and follow the rest of the pancancer-info instructions on how to setup and use bindle
