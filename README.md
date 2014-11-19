@@ -19,7 +19,7 @@ This playbook relies upon bindle's install playbook.
     sudo apt-get install git
     git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
     cd architecture-setup 
-    sudo bash setup.sh
+    bash setup.sh
     
 You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem dest=/home/ubuntu/.ssh/gnostest.pem
 
