@@ -18,7 +18,7 @@
 - name: Checkout the Seqware git repo
   git: repo=https://github.com/SeqWare/seqware-bag.git
        dest=/home/{{ user_name }}/architecture2
-       version={{ seqware_git_branch }}
+       version={{ seqware_bag_git_branch }}
 
 - name: Checkout the pancancer-bag git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
