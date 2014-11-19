@@ -7,6 +7,6 @@ sudo apt-get update
 sudo apt-get -y install ansible
 git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
 cd playbooks/Bindle
-git checkout 2.0-alpha.2
+git checkout 2.0-alpha.3
 cd ../..
 
