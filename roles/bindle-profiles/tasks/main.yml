@@ -1,9 +1,11 @@
 ---
 
 - name: Install NTP
+  sudo: True
   apt: name=ntp state=latest
 
 - name: Start NTP on boot
+  sudo: True
   service: name=ntp state=started enabled=yes
 
 
