@@ -5,8 +5,7 @@
   sudo: True
   tasks:
   - { include: playbooks/Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
-        vagrant_plugin: vagrant-aws, 
-        vagrant_plugin_version: 0.5.0, 
+        user_name: ubuntu,
         bindle_git_branch: master,
         bindle_config: aws.cfg}
 
