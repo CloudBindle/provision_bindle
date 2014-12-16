@@ -21,7 +21,8 @@ This playbook relies upon bindle's install playbook.
     cd architecture-setup 
     bash setup.sh
     
-You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem 
+!!! IMPORTANT !!!    
+You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
 ## Running 
 
