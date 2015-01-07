@@ -28,7 +28,7 @@ You will also need to get a confidential pem key for GNOS upload/download from y
 
 If you wish to setup the host your are currently on as a launcher host, skip directly to the command below. 
 
-If you wish to setup some other host, you will need to edit uour inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host. Also for EBI change user name to vagrant in the files "playbooks/Bindle/install/roles//bindle-dependencies/vars/main.yml" and "roles/bindle-profiles". 
+If you wish to setup some other host, you will need to edit uour inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host. Also for EBI change user name to vagrant in the files "playbooks/Bindle/install/roles//bindle-dependencies/vars/main.yml" and "roles/bindle-profiles" and 'site.yml'. # this needs to be fixed. Not sure if we should just make it so that we are using the ubuntu user everywhere or if we should make it a global variable.  
         
     ansible-playbook -i inventory site.yml
 
