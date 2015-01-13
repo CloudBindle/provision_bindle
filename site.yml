@@ -19,7 +19,7 @@
   # this seems like the wrong place for this, but not sure what the best place for it is if we cannot redistribute 
   # with the AMI
   - name: Copy over pem key for BWA
-    copy: src=/home/ubuntu/.ssh/gnostest.pem dest=/home/ubuntu/.ssh/gnostest.pem mode=600
+    copy: src=/home/ubuntu/.ssh/gnos.pem dest=/home/ubuntu/.ssh/gnos.pem mode=600
   # change permissions
   # chamge owner
   
