@@ -1,14 +1,4 @@
 #!/bin/bash
-
-# Get latest verison of vars
-#wget https://github.com/ICGC-TCGA-PanCancer/architecture-setup/blob/master/roles/bindle-profiles/vars/main.yml -O roles/bindle-profiles/vars/main.yml
-
-
-#git show $1:roles/bindle-profiles/vars/main.yml > roles/bindle-profiles/vars/main.yml
-
-#curl https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=$1 | grep \"content\"
-
-
 CURL_USER="";
 GIT_USER="";
 CURL_URL_PARAM="";
