@@ -14,17 +14,33 @@ while getopts "h :u:v:" opt; do
             VERSION_NUM=$OPTARG;
             ;;
         h)
-            echo This script will upgrade your current architecture-setup by downloading a newer version of the ansible file which
-            echo contains references to architecture-setup\'s dependency repositories. 
-            echo A backup of your old main.yml file will be created before the new one is downloaded.
-            echo Options:
-            echo "  -u <github user name> - A github username to use for authentication with the github API when downloading files."
-            echo "                          This is not necessary, but it is a good idea. Unauthenticated requests to the API may"
-            echo "                          restricted to a certain number of respones per hour, per IP address."
-            echo "  -v <version number>   - A version of architecture-setup that you wish to upgrade. This is optional. if left"
-            echo "                          blank, no version number will be sent to github and by default, the most recent version"
-            echo "                          will be downloaded."
-            echo "  -h                    - Prints this help text."
+cat <<xxxEndOfHelpxxx
+Upgrade architecture-setup:
+
+This script will upgrade your current architecture-setup by downloading a newer
+version of the ansible file which contains references to architecture-setup's
+dependency repositories. 
+
+A backup of your old main.yml file will be created before the new one is
+downloaded.
+
+Options:
+  -u <github user name>	- A github username to use for authentication with the
+                          github API when downloading files.
+                          This is not necessary, but it is a good idea.
+                          Unauthenticated requests to the API may restricted to
+                          a certain number of respones per hour, per IP address.
+
+  -v <version number>	- A version of architecture-setup that you wish to
+                          upgrade.
+                          This is optional.
+                          If left blank, no version number will be sent to
+                          github and
+                          by default, the most recent version will be
+                          downloaded.
+
+  -h			- Prints this help text.
+xxxEndOfHelpxxx
             exit
     esac
 done
