@@ -16,11 +16,33 @@ fi
 
 declare -a info
 
+# Examine the header dump from curl in header.txt and exit the script if status is not 200 OK
+process_curl_status()
+{
+  local raw_result="$1"
+  local response_status=$(cat header.txt | grep Status | sed 's/[^0-9]*\([0-9]*\).*/\1/g')
+  if [[  "$response_status" != 20* ]] ; then
+    echo Response status is $response_status. Message from github API: $raw_result
+    exit
+  fi
+}
+
 # This function will get the published_at date and tag_name of the most recent release of architecture-setup
 get_latest_release()
 {
-  filtered_result=$(curl -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')
+  local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt) 
+  process_curl_status "$raw_result"
+  #echo $raw_result
+  local filtered_result=$(echo $raw_result |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')  
+  #global info array will have tag name at index 0, release published_at at index 1
   info=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')" "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
+}
+
+num_new_commits()
+{
+  local repo="$1";
+  local since_date="$2";
+  echo $(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$repo/commits?since=$since_date --dump-header header.txt | jq 'length');
 }
 
 get_latest_release
@@ -39,12 +61,14 @@ declare -A REPO_VAR_VERS
 for r in "${REPOS[@]}"
 do
   echo Checking for new commits in $r...;
-  NUM_COMMITS=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$r/commits?since=$RELEASE_DATE | jq 'length');
+  #NUM_COMMITS=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$r/commits?since=$RELEASE_DATE | jq 'length');
+  NUM_COMMITS=$(num_new_commits "$r" "$RELEASE_DATE")
   echo Number of commits since most recent release: $NUM_COMMITS
-  if [ $NUM_COMMITS -gt 0 ] ; then
+  if [ "$NUM_COMMITS" -gt 0 ] ; then
     printf "New release must be created!\nRelease will be tagged as: $NEW_TAG\n\n"
     # Create the new tag on the repo for the release. TODO: The value for "draft" could be a parameter. Also, the value for "body".
-#    RESULT=$(curl -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases )
+    NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
+    process_curl_status "$NEW_RELEASE_RESULT"
 #    echo $RESULT
     REPO_VAR_VERS[$r]=$NEW_TAG
   else
@@ -55,9 +79,6 @@ done
 # Now, we need to update roles/bindle-profiles/vars/main.yml
 for r in "${!REPO_VAR_VERS[@]}"
 do
-#  echo key: $r
-#  echo value: ${REPO_VAR_VERS[$r]}
-#  echo var name: ${REPO_VARS[$r]}
   sed -i 's/'${REPO_VARS[$r]}': \".*\"/'${REPO_VARS[$r]}': \"'${REPO_VAR_VERS[$r]}'\"/g' ./roles/bindle-profiles/vars/main.yml
 done
 
@@ -65,13 +86,14 @@ FILECONTENTS=$(cat ./roles/bindle-profiles/vars/main.yml)
 printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 
 # Update main.yml in repo
-OLD_HASH=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script | grep \"sha\" | sed 's/ *\(\"sha\": \"[^ ]*\"\),/\1/g')
-#echo $OLD_HASH
+OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
+process_curl_status "$OLD_HASH_RESULT"
+OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
+#echo old_hash is $OLD_HASH
 FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
+# Actually, github API requires the hash of the file BEFORE it's updated, so we don't need to get the hash of the new version of the file.
 #HASH=$(echo -e "blob $FILESIZE\0$FILECONTENTS" | shasum -t | sed 's/\(.*\) -/\1/g')
-#HASH=$(git hash-object ./roles/bindle-profiles/vars/main.yml)
 ENCODED_FILE=$(base64 -w 0 roles/bindle-profiles/vars/main.yml)
-JSON_DATA="{\"path\":\"main.yml\",\"message\":\"Updated with new versions of dependencies\",\"content\":\"$ENCODED_FILE\",$OLD_HASH,\"branch\":\"feature/upgrade_launcher_script\"}"
-echo $JSON_DATA
-COMMIT_RESULT=$(curl -v -XPUT -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '"/'"$JSON_DATA"'/"' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml )
-echo $COMMIT_RESULT
+COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
+process_curl_status "$COMMIT_RESULT"
+#echo $COMMIT_RESULT
