@@ -42,6 +42,8 @@ process_curl_status()
 {
   local raw_result="$1"
   local response_status=$(cat header.txt | grep Status | sed 's/[^0-9]*\([0-9]*\).*/\1/g')
+  # 20x response codes (200 OK, 201 CREATED, etc...) mean some kind of succes, we'll treat everything
+  # else as an error and print the message from the API. 
   if [[  "$response_status" != 20* ]] ; then
     echo "Response status is $response_status. Message from github API: $raw_result"
     exit
@@ -53,12 +55,12 @@ get_latest_release()
 {
   local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt) 
   process_curl_status "$raw_result"
-  #echo $raw_result
   local filtered_result=$(echo $raw_result |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')  
   #global info array will have tag name at index 0, release published_at at index 1
   info=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')" "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
 }
 
+# This function returns the number of new commits that have happened in a repository since a given date.
 num_new_commits()
 {
   local repo="$1";
@@ -91,7 +93,6 @@ do
       # Create the new tag on the repo for the release. TODO: The value for "draft" could be a parameter. Also, the value for "body".
       NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
       process_curl_status "$NEW_RELEASE_RESULT"
-#     echo $RESULT
     fi
     REPO_VAR_VERS[$r]=$NEW_TAG
   else
@@ -112,15 +113,12 @@ printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-#echo old_hash is $OLD_HASH
 FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
 # Actually, github API requires the hash of the file BEFORE it's updated, so we don't need to get the hash of the new version of the file.
 #HASH=$(echo -e "blob $FILESIZE\0$FILECONTENTS" | shasum -t | sed 's/\(.*\) -/\1/g')
 ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
-#echo $ENCODED_FILE
 if [ "$TEST_MODE" == "false" ] ; then
   echo "Submitting updated main.yml"
   COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
   process_curl_status "$COMMIT_RESULT"
 fi
-#echo $COMMIT_RESULT
