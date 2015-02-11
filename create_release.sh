@@ -1,4 +1,10 @@
 #!/bin/bash
+# Check that we have version 4+ of bash.
+BASH_MAJOR_VERSION=${BASH_VERSION:0:1}
+if [ "$BASH_MAJOR_VERSION" -le 3 ] ; then
+  echo You need bash version 4 or greater. You are currently running: \$BASH_VERSION=$BASH_VERSION
+  exit
+fi
 
 # Check that there is a github token file.
 if [ ! -e github.token ] ; then
@@ -49,7 +55,7 @@ get_latest_release
 RELEASE_DATE=${info[1]}
 TAG=${info[0]}
 echo Most recent release date: $RELEASE_DATE
-echo Most recen release tag: $TAG
+echo Most recent release tag: $TAG
 
 #These repositories will be examined for commits that have occured since the date of the last architecture-setup release.
 REPOS=("ICGC-TCGA-PanCancer/pancancer-bag" "ICGC-TCGA-PanCancer/monitoring-bag" "ICGC-TCGA-PanCancer/workflow-decider" "SeqWare/seqware-bag" "CloudBindle/Bindle")
@@ -57,7 +63,6 @@ declare -A REPO_VARS
 REPO_VARS=( ['ICGC-TCGA-PanCancer/pancancer-bag']=pancancer_bag_git_branch ['ICGC-TCGA-PanCancer/monitoring-bag']=monitoring_bag_git_branch ['ICGC-TCGA-PanCancer/workflow-decider']=decider_git_branch ['SeqWare/seqware-bag']=seqware_bag_git_branch ['CloudBindle/Bindle']=bindle_git_branch )
 declare -A REPO_VAR_VERS
 
-#REPOS=(ICGC-TCGA-PanCancer/workflow-decider)
 for r in "${REPOS[@]}"
 do
   echo Checking for new commits in $r...;
@@ -67,8 +72,8 @@ do
   if [ "$NUM_COMMITS" -gt 0 ] ; then
     printf "New release must be created!\nRelease will be tagged as: $NEW_TAG\n\n"
     # Create the new tag on the repo for the release. TODO: The value for "draft" could be a parameter. Also, the value for "body".
-    NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
-    process_curl_status "$NEW_RELEASE_RESULT"
+#    NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
+#    process_curl_status "$NEW_RELEASE_RESULT"
 #    echo $RESULT
     REPO_VAR_VERS[$r]=$NEW_TAG
   else
@@ -93,7 +98,8 @@ OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*
 FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
 # Actually, github API requires the hash of the file BEFORE it's updated, so we don't need to get the hash of the new version of the file.
 #HASH=$(echo -e "blob $FILESIZE\0$FILECONTENTS" | shasum -t | sed 's/\(.*\) -/\1/g')
-ENCODED_FILE=$(base64 -w 0 roles/bindle-profiles/vars/main.yml)
-COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
-process_curl_status "$COMMIT_RESULT"
+ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
+#echo $ENCODED_FILE
+#COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
+#process_curl_status "$COMMIT_RESULT"
 #echo $COMMIT_RESULT
