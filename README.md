@@ -35,7 +35,24 @@ If you wish to setup some other host, you will need to edit your inventory. Repl
 Navigate to ~/architecture2 and follow the rest of the pancancer-info instructions on how to setup and use bindle
 
 ## Upgrading to a new version
-(Placeholder document for usage of `upgrade_architecture_setup.sh`)
+
+If you have a launcher that has an older version of architecture-setup and you wish to upgrade, you can use the `upgrade_architecture_setup.sh` script.
+
+This script will get the file `roles/bindle-profiles/vars/main.yml` that is attached to the latest released version of architecture-setup. It is also possible to specify a specific version of architecture-setup to upgrade to. The script will then run the main ansible playbook for architecture-setup, using the updated `roles/bindle-profiles/vars/main.yml`.
+
+Example:
+
+    upgrade_architecture_setup.sh -v 1.0.5
+    
+The file `roles/bindle-profiles/vars/main.yml` that is a part of architecture-setup 1.0.5 will be downloaded to the current local repository. Ansible will then be run (`sudo ansible-playbook -i inventory site.yml`).
+
+    upgrade_architecture_setup.sh
+
+The file `roles/bindle-profiles/vars/main.yml` that is a part of architecture-setup's *most recent release* will be downloaded to the current local repository. Ansible will then be run (`sudo ansible-playbook -i inventory site.yml`).
+
+**NOTE:** This script uses the github API to get specific release versions of a file. It is a good idea to authenticate all requests that are sent to the github API, because the API will limit the number of *unauthenticated* requests to 60/hour/IP address. Authenticated requests have much higher limits. To do this, you will need a valid github account. To make authenticated requests with this script, call it like this:
+
+    upgrade_architecture_setup.sh -u MyGithubUserName -v 1.0.5
 
 ## Creating a new release
 
