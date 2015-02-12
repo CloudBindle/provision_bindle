@@ -39,7 +39,7 @@ Navigate to ~/architecture2 and follow the rest of the pancancer-info instructio
 
 ## Creating a new release
 
-It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. You will first need to install the additional package `jq`:
+It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. Please ensure that you have bash 4.* to execute this script. You will need to install the additional package `jq`:
 
     sudo apt-get install jq
     
