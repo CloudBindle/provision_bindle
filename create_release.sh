@@ -18,7 +18,7 @@ done
 if [ "$TEST_MODE" == "true" ] ; then
   echo "Test flag has been set. No commits will be made."
 else
-  echo "*** Test flag is NOT set. Commits will happen! ***"
+  echo "*** Test flag is NOT set. Commits WILL happen! ***"
 fi
 
 # Check that there is a github token file.
@@ -28,7 +28,7 @@ if [ ! -e github.token ] ; then
 fi
 
 # Check that the user provided a tag name.
-# TODO: Agree on a way to generate tag names automatically.
+# TODO: Agree on a way to generate tag names automatically, maybe?
 NEW_TAG=$1
 if [ "$NEW_TAG" = '' ] ; then 
   echo "You must provide a tag name for any releases that will be created! Exiting."
@@ -53,11 +53,15 @@ process_curl_status()
 # This function will get the published_at date and tag_name of the most recent release of architecture-setup
 get_latest_release()
 {
-  local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt) 
+  local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic \
+                     https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt) 
+
   process_curl_status "$raw_result"
   local filtered_result=$(echo $raw_result |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')  
+
   #global info array will have tag name at index 0, release published_at at index 1
-  info=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')" "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
+  info=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')"
+         "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
 }
 
 # This function returns the number of new commits that have happened in a repository since a given date.
@@ -65,7 +69,9 @@ num_new_commits()
 {
   local repo="$1";
   local since_date="$2";
-  echo $(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$repo/commits?since=$since_date --dump-header header.txt | jq 'length');
+  echo $(curl -s -u `cat github.token`:x-oauth-basic \
+         https://api.github.com/repos/$repo/commits?since=$since_date \
+         --dump-header header.txt | jq 'length');
 }
 
 get_latest_release
@@ -75,9 +81,19 @@ echo "Most recent release date: $RELEASE_DATE"
 echo "Most recent release tag: $TAG"
 
 #These repositories will be examined for commits that have occured since the date of the last architecture-setup release.
-REPOS=("ICGC-TCGA-PanCancer/pancancer-bag" "ICGC-TCGA-PanCancer/monitoring-bag" "ICGC-TCGA-PanCancer/workflow-decider" "SeqWare/seqware-bag" "CloudBindle/Bindle")
+REPOS=("ICGC-TCGA-PanCancer/pancancer-bag"
+       "ICGC-TCGA-PanCancer/monitoring-bag"
+       "ICGC-TCGA-PanCancer/workflow-decider"
+       "SeqWare/seqware-bag"
+       "CloudBindle/Bindle")
+
 declare -A REPO_VARS
-REPO_VARS=( ['ICGC-TCGA-PanCancer/pancancer-bag']=pancancer_bag_git_branch ['ICGC-TCGA-PanCancer/monitoring-bag']=monitoring_bag_git_branch ['ICGC-TCGA-PanCancer/workflow-decider']=decider_git_branch ['SeqWare/seqware-bag']=seqware_bag_git_branch ['CloudBindle/Bindle']=bindle_git_branch )
+REPO_VARS=( ['ICGC-TCGA-PanCancer/pancancer-bag']=pancancer_bag_git_branch 
+            ['ICGC-TCGA-PanCancer/monitoring-bag']=monitoring_bag_git_branch 
+            ['ICGC-TCGA-PanCancer/workflow-decider']=decider_git_branch 
+            ['SeqWare/seqware-bag']=seqware_bag_git_branch 
+            ['CloudBindle/Bindle']=bindle_git_branch )
+
 declare -A REPO_VAR_VERS
 
 for r in "${REPOS[@]}"
@@ -110,7 +126,9 @@ FILECONTENTS=$(cat ./roles/bindle-profiles/vars/main.yml)
 printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 
 # Update main.yml in repo
-OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
+OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic \ 
+                  https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script \
+                  --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
 FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
@@ -122,3 +140,10 @@ if [ "$TEST_MODE" == "false" ] ; then
   COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
   process_curl_status "$COMMIT_RESULT"
 fi
+
+# Add new release tag to architecture-setup
+if [ "$TEST_MODE" == "false" ] ; then
+  NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt)
+  process_curl_status "$NEW_RELEASE_RESULT"
+fi
+ 
