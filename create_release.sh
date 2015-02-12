@@ -6,13 +6,49 @@ if [ "$BASH_MAJOR_VERSION" -le 3 ] ; then
   exit
 fi
 
+print_help()
+{
+  cat <<xxxHELPTEXT
+Usage:
+  bash create_release.sh -n release_name [-t][-h]
+
+-n  - The name to use when creating release tags.
+-t  - Optional. The script will execute, but will not attempt
+      to modify any repositories. Releases will NOT be created,
+      modified files will NOT be checked in.
+-h  - Print this help text.
+It is recommended to run at least once in test mode to ensure that
+rols/bindle-profiles/vars/main.yml is upated correctly.
+xxxHELPTEXT
+exit
+}
+
+if [ $# -lt 1 ] ; then
+  print_help
+fi
+
 TEST_MODE="false"
 # Check for the test flag
-for i in "$@"
-do
-  if [ "$i" == "--test" ] ; then
-    TEST_MODE="true"
-  fi
+while getopts ":htn:" opt ; do
+  case $opt in
+    h)
+      print_help
+      ;;
+    n)
+      NEW_TAG=$OPTARG
+      ;;
+    t)
+      TEST_MODE=true
+      ;;
+    \?)
+      printf "Invalid option: -$OPTARG\n\n">&2
+      print_help
+      ;;
+    :)
+      printf "Option -$OPTARG requires an argument.\n\n" >&2
+      print_help
+      ;;
+  esac
 done
 
 if [ "$TEST_MODE" == "true" ] ; then
@@ -29,7 +65,7 @@ fi
 
 # Check that the user provided a tag name.
 # TODO: Agree on a way to generate tag names automatically, maybe?
-NEW_TAG=$1
+# NEW_TAG=$1
 if [ "$NEW_TAG" = '' ] ; then 
   echo "You must provide a tag name for any releases that will be created! Exiting."
   exit
