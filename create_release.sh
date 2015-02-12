@@ -100,14 +100,15 @@ get_latest_release()
          "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
 }
 
+NUM_COMMITS=0
 # This function returns the number of new commits that have happened in a repository since a given date.
 num_new_commits()
 {
   local repo="$1";
   local since_date="$2";
-  echo $(curl -s -u `cat github.token`:x-oauth-basic \
-         https://api.github.com/repos/$repo/commits?since=$since_date \
-         --dump-header header.txt | jq 'length');
+  local result=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$repo/commits?since=$since_date --dump-header header.txt) 
+  process_curl_status "$result"
+  NUM_COMMITS=$(echo "$result"| jq 'length')
 }
 
 get_latest_release
@@ -135,8 +136,7 @@ declare -A REPO_VAR_VERS
 for r in "${REPOS[@]}"
 do
   echo "Checking for new commits in $r..."
-  #NUM_COMMITS=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/$r/commits?since=$RELEASE_DATE | jq 'length');
-  NUM_COMMITS=$(num_new_commits "$r" "$RELEASE_DATE")
+  num_new_commits "$r" "$RELEASE_DATE"
   echo "Number of commits since most recent release: $NUM_COMMITS"
   if [ "$NUM_COMMITS" -gt 0 ] ; then
     printf "New release must be created!\nRelease will be tagged as: $NEW_TAG\n\n"
