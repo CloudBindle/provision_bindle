@@ -12,13 +12,13 @@ print_help()
 Usage:
   bash create_release.sh -n release_name [-t][-h]
 
--n  - The name to use when creating release tags.
--t  - Optional. The script will execute, but will not attempt
-      to modify any repositories. Releases will NOT be created,
-      modified files will NOT be checked in.
--h  - Print this help text.
+-n release_name  - The name to use when creating release tags.
+-t               - Optional. The script will execute, but will not attempt
+                   to modify any repositories. Releases will NOT be created,
+                   modified files will NOT be checked in.
+-h               - Print this help text.
 It is recommended to run at least once in test mode to ensure that
-rols/bindle-profiles/vars/main.yml is upated correctly.
+roles/bindle-profiles/vars/main.yml is upated correctly.
 xxxHELPTEXT
 exit
 }
@@ -155,19 +155,17 @@ done
 # Now, we need to update roles/bindle-profiles/vars/main.yml
 for r in "${!REPO_VAR_VERS[@]}"
 do
-  sed -i 's/'${REPO_VARS[$r]}': \".*\"/'${REPO_VARS[$r]}': \"'${REPO_VAR_VERS[$r]}'\"/g' ./roles/bindle-profiles/vars/main.yml
+  sed -i -e 's/'${REPO_VARS[$r]}': \".*\"/'${REPO_VARS[$r]}': \"'${REPO_VAR_VERS[$r]}'\"/g' roles/bindle-profiles/vars/main.yml
 done
 
 FILECONTENTS=$(cat ./roles/bindle-profiles/vars/main.yml)
 printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 
 # Update main.yml in repo
-OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic \ 
-                  https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script \
-                  --dump-header header.txt)
+OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
+#FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
 # Actually, github API requires the hash of the file BEFORE it's updated, so we don't need to get the hash of the new version of the file.
 #HASH=$(echo -e "blob $FILESIZE\0$FILECONTENTS" | shasum -t | sed 's/\(.*\) -/\1/g')
 ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
