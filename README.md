@@ -49,7 +49,10 @@ Creating a new release involves examining projects that architecture-setup depen
 
 Executing the script is done like this:
 
-    bash create_release.sh <RELEASE_NAME> [--test]
+    bash create_release.sh -n <RELEASE_NAME> [-t][-h]
     
-`<RELEASE_NAME>` is required. This will be used for the tag name for all projects that get updated in this release.
-`--test` is used to execute the script in test mode. When executed in test mode, no releases are created and no files are committed.
+`-n <RELEASE_NAME>` is required. This will be used for the tag name for all projects that get updated in this release.
+
+`-t` is used to execute the script in test mode. When executed in test mode, no releases are created and no files are committed.
+
+`-h` will print help text.
