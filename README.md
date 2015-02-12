@@ -54,6 +54,8 @@ The file `roles/bindle-profiles/vars/main.yml` that is a part of architecture-se
 
     upgrade_architecture_setup.sh -u MyGithubUserName -v 1.0.5
 
+You will be prompted for the password for the account you used.
+
 ## Creating a new release
 
 It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. Please ensure that you have bash 4.* to execute this script. You will need to install the additional package `jq`:
