@@ -1,4 +1,14 @@
 #!/bin/bash
+# This script will update files in:
+# architecture-setup
+#
+# This script will create release tags for:
+# pancancer-bag
+# workflow-decider
+# monitoring-bag
+# seqware-bag
+# Bindle
+
 # Check that we have version 4+ of bash.
 BASH_MAJOR_VERSION=${BASH_VERSION:0:1}
 if [ "$BASH_MAJOR_VERSION" -le 3 ] ; then
@@ -31,7 +41,7 @@ TEST_MODE="false"
 # Check for the test flag
 while getopts ":htn:" opt ; do
   case $opt in
-    h)
+   h)
       print_help
       ;;
     n)
@@ -165,12 +175,9 @@ printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-#FILESIZE=$(stat -c%s ./roles/bindle-profiles/vars/main.yml)
-# Actually, github API requires the hash of the file BEFORE it's updated, so we don't need to get the hash of the new version of the file.
-#HASH=$(echo -e "blob $FILESIZE\0$FILECONTENTS" | shasum -t | sed 's/\(.*\) -/\1/g')
 ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
 if [ "$TEST_MODE" == "false" ] ; then
-  echo "Submitting updated main.yml"
+  echo "Submitting updated main.yml architecture-setup"
   COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
   process_curl_status "$COMMIT_RESULT"
 fi
@@ -180,4 +187,5 @@ if [ "$TEST_MODE" == "false" ] ; then
   NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt)
   process_curl_status "$NEW_RELEASE_RESULT"
 fi
- 
+
+
