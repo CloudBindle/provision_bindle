@@ -1,17 +1,17 @@
 #!/bin/bash
-CURL_USER="";
-GIT_USER="";
-CURL_URL_PARAM="";
+CURL_USER=""
+GIT_USER=""
+CURL_URL_PARAM=""
 VERSION_NUM=""
 while getopts "h :u:v:" opt; do
     case "$opt" in
         u)
-            CURL_USER=" -u $OPTARG";
-            GIT_USER="$OPTARG";
+            CURL_USER=" -u $OPTARG"
+            GIT_USER="$OPTARG"
             ;;
         v)
-            CURL_URL_PARAM="ref=$OPTARG";
-            VERSION_NUM=$OPTARG;
+            CURL_URL_PARAM="ref=$OPTARG"
+            VERSION_NUM=$OPTARG
             ;;
         h)
 cat <<xxxEndOfHelpxxx
@@ -44,41 +44,41 @@ xxxEndOfHelpxxx
             exit
     esac
 done
-echo $GIT_USER
-echo $VERSION_NUM
+echo "$GIT_USER"
+echo "$VERSION_NUM"
 VARS_PATH=roles/bindle-profiles/vars
 VARS_FILE=$VARS_PATH/main.yml
 
-#let's back up the old one, just in case they still want it.
+# let's back up the old one, just in case they still want it.
 DATE_STR=$(date +%Y%m%d_%H%M%S)
 cp $VARS_FILE $VARS_PATH/main_${DATE_STR}_yml.bkup
 
-RESPONSE=$(curl ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
+RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
 
 if [[ $RESPONSE =~ \"message\"\: ]] ; then 
     MESSAGE=$(echo $RESPONSE | sed 's/{ \"message\"\: \"\([^\"]*\).*$/\1/g')
-    echo A message was detected:
+    echo "A message was detected:"
     echo \"$MESSAGE\"
 else
-    #TODO: Find a nice clean way to do these four commands in a single step in bash. It worked from the command line, not sure why it didn't work right in script.
+    # TODO: Find a nice clean way to do these four commands in a single step in bash. It worked from the command line, not sure why it didn't work right in script.
 
-    #find the line with content.
+    # find the line with content.
     RESPONSE_1=$(echo $RESPONSE | grep \"content\")
-    #Response will actually contain "\n" so that it can be nicely formatted, but that will break base64 decode so we need to remove them.
+    # Response will actually contain "\n" so that it can be nicely formatted, but that will break base64 decode so we need to remove them.
     RESPONSE_2=$(echo $RESPONSE_1 | sed 's/\\n//g')
-    #Extract just the encoded conent
+    # Extract just the encoded conent
     RESPONSE_3=$(echo $RESPONSE_2 | sed 's/.* *\"content\": \"\([^\"]*\).*/\1/g')
-    #Decode to file.
+    # Decode to file.
     echo $RESPONSE_3 | base64 --decode > $VARS_FILE
 
     FILESIZE=$(stat -c%s "$VARS_FILE")
 
     if [ $FILESIZE == 0 ] ; then
-        echo Error! No file was downloaded for version $VERSION_NUM
+        echo "Error! No file was downloaded for version $VERSION_NUM"
     else
-        echo File downloaded to $VARS_FILE
-        #If the file was downloaded safely, now run ansible
-        echo Running architecture-setup with updated dependencies...
-        sudo ansible-playbook -i inventory site.yml
+        echo "File downloaded to $VARS_FILE"
+
     fi
 fi
+
+
