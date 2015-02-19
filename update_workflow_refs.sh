@@ -71,107 +71,48 @@ if [ ! -e github.token ] ; then
   exit
 fi
 
-#TODO: refactor and use this function!
-check_in_updated_file()
+update_file_in_repo()
 {
   file_name=$1
   path_in_repo=$2
   repo_name=$3
   # now check in the updated vars file.
-  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt)
+  URL="https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name"
+  echo "updating file: $URL"
+  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic $URL --dump-header header.txt)
   process_curl_status "$OLD_HASH_RESULT"
   OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-  ENCODED_FILE=$(base64 ~/$repo_name/$path_in_repo/$file_name | tr -d "\n")
+  ENCODED_FILE=$(base64 ~/architecture2/$repo_name/$path_in_repo/$file_name | tr -d "\n")
   if [ "$TEST_MODE" == "false" ] ; then
     echo "Submitting updated $path_in_repo/$file_name for $repo_name"
-    COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
-    process_curl_status "$COMMIT_RESULT"
+    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
+    #process_curl_status "$COMMIT_RESULT"
   fi
 }
 
-if [  -n "$WORKFLOW_VERSION" ] ; then
 
+if [  -n "$WORKFLOW_VERSION" ] ; then
   # update the vars file for George's workflow-update playbook so that it will download a new version of the workflow.
-  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
-  check_in_updated_file "main.yml" "workflow-update/roles/udate_workflow/vars" "pancancer-bag"
-  # now check in the updated vars file.
-#  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/pancancer-bag/contents/workflow-update/roles/update_workflow/vars/main.yml --dump-header header.txt)
-#  process_curl_status "$OLD_HASH_RESULT"
-#  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-#  ENCODED_FILE=$(base64 ~/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml | tr -d "\n")
-#  if [ "$TEST_MODE" == "false" ] ; then
-#    echo "Submitting updated main.yml for pancancer-bag/workflow-update role"
-#    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new workflow","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/pancancer-bag/contents/workflow-update/roles/update_workflow/vars/main.yml --dump-header header.txt )
-#    #process_curl_status "$COMMIT_RESULT"
-#  fi
+  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture2/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
+  update_file_in_repo "main.yml" "workflow-update/roles/update_workflow/vars" "pancancer-bag"
 
   # monitoring-bag also contains a reference to the workflow version so it also needs to be updated.
   # Update monitoring-bag/roles/client/vars/main.yml
-  sed -i -e 's/\(workflow_version: SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)/\1'$WORKFLOW_VERSION'/g' ~/monitoring-bag/roles/client/vars/main.yml
-  check_in_updated_file "main.yml" "roles/client/vars" "monitoring-bag"
-#  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/monitoring-bag/contents/roles/client/vars/main.yml --dump-header header.txt)
-#  process_curl_status "$OLD_HASH_RESULT"
-#  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-#  ENCODED_FILE=$(base64 ~/monitoring-bag/roles/client/vars/main.yml | tr -d "\n")
-#  if [ "$TEST_MODE" == "false" ] ; then
-#    echo "Submitting updated main.yml for monitoring-bag/client role"
-#    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new workflow version","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/monitoring-bag/contents/roles/client/vars/main.yml --dump-header header.txt )
-#    #process_curl_status "$COMMIT_RESULT"
-#  fi
-  
+  sed -i -e 's/\(workflow_version: SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/monitoring-bag/roles/client/vars/main.yml
+  update_file_in_repo "main.yml" "roles/client/vars" "monitoring-bag"
+ 
   #############################################################################
   #
   # Updates for workflow-decider
-  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/workflow-decider/conf/sites/decider.oicr.ini
-  sed -i -e 's/\(pem-file=.*SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(.*\)/\1'$WORKFLOW_VERSION'\3/g' ~/workflow-decider/conf/sites/decider.oicr.ini
-  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/contents/conf/sites/decider.oicr.ini --dump-header header.txt)
-  process_curl_status "$OLD_HASH_RESULT"
-  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-  ENCODED_FILE=$(base64  ~/workflow-decider/conf/sites/decider.oicr.ini | tr -d "\n")
-  if [ "$TEST_MODE" == "false" ] ; then
-    echo "Submitting updated main.yml for monitoring-bag/client role"
-    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"decider.oicr.ini","message":"Updated with new workflow version","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/conf/sites/decider.oicr.ini --dump-header header.txt )
-    #process_curl_status "$COMMIT_RESULT"
-  fi
+  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/workflow-decider/conf/sites/decider.oicr.ini
+  sed -i -e 's/\(pem-file=.*SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(.*\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture2/workflow-decider/conf/sites/decider.oicr.ini
+  update_file_in_repo "decider.oicr.ini" "conf/sites" "workflow-decider"
 
-  # Updates for workflow-decider
-  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/workflow-decider/conf/sites/decider.etri.etri.ini
-  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/contents/conf/sites/decider.etri.etri.ini --dump-header header.txt)
-  process_curl_status "$OLD_HASH_RESULT"
-  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-  ENCODED_FILE=$(base64  ~/workflow-decider/conf/sites/decider.oicr.ini | tr -d "\n")
-  if [ "$TEST_MODE" == "false" ] ; then
-    echo "Submitting updated main.yml for monitoring-bag/client role"
-    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"decider.etri.etri.ini","message":"Updated with new workflow version","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/conf/sites/decider.etri.etri.ini --dump-header header.txt )
-    #process_curl_status "$COMMIT_RESULT"
-  fi
-
-  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/workflow-decider/conf/sites/decider.dkfz.32.ini
-  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/contents/conf/sites/decider.dkfz.32.ini --dump-header header.txt)
-  process_curl_status "$OLD_HASH_RESULT"
-  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-  ENCODED_FILE=$(base64  ~/workflow-decider/conf/sites/decider.oicr.ini | tr -d "\n")
-  if [ "$TEST_MODE" == "false" ] ; then
-    echo "Submitting updated main.yml for monitoring-bag/client role"
-    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"decider.dkfz.32.ini","message":"Updated with new workflow version","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/conf/sites/decider.oicr.ini --dump-header header.txt )
-    #process_curl_status "$COMMIT_RESULT"
-  fi
-
-  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/workflow-decider/conf/sites/decider.dkfz.64.ini
-  sed -i -e 's/\(seqware-clusters="conf/cluster-\)\(.*\)\(\.json"\)/\1'$WORKFLOW_VERSION'\3/g' ~/workflow-decider/conf/sites/decider.dkfz.64.ini
-  sed -i -e 's/\(report="workflow_decider_report_\)\(.*\)\(\.txt"\)/\1'$WORKFLOW_VERSION'\3/g' ~/workflow-decider/conf/sites/decider.dkfz.64.ini
-  OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/contents/conf/sites/decider.dkfz.64.ini --dump-header header.txt)
-  process_curl_status "$OLD_HASH_RESULT"
-  OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
-  ENCODED_FILE=$(base64  ~/workflow-decider/conf/sites/decider.oicr.ini | tr -d "\n")
-  if [ "$TEST_MODE" == "false" ] ; then
-    echo "Submitting updated main.yml for monitoring-bag/client role"
-    #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"decider.dkfz.64.ini","message":"Updated with new workflow version","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/workflow-decider/conf/sites/decider.dkfz.64.ini --dump-header header.txt )
-    #process_curl_status "$COMMIT_RESULT"
-  fi
+  sed -i -e 's/\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/workflow-decider/conf/decider.ini
+  update_file_in_repo "decider.ini" "conf" "workflow-decider"
 
 else
-  echo "You must give a workflow version."
+  printf "You must give a workflow version.\n\n"
   print_help
   exit
 fi
