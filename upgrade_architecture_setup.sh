@@ -77,7 +77,9 @@ else
         echo "Error! No file was downloaded for version $VERSION_NUM"
     else
         echo "File downloaded to $VARS_FILE"
-
+        #If file download was OK, run ansible
+        echo "Running architecture-setup with updated dependencies..."
+        sudo ansible-playbook -i inventory site.yml
     fi
 fi
 
