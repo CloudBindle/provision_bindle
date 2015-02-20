@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 #TODO: This should value should come from user input
 #WORKFLOW_VERSION="1.0.4"
 WORKFLOW_VERSION=$1
@@ -9,6 +10,7 @@ WORKFLOW_NAME=Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr
 # Get a list of everything that varant is managing (that's also in the architecture2/Bindle directory)
 # $NODES will be an array of directories of vagrant-managed workers.
 echo "Getting list of workers from Vagrant"
+# NOTE: Eventually switch to Adam's inventory script
 NODES=($(vagrant global-status | grep .*/Bindle/.* | sed 's/.*\(\/home\/ubuntu\/architecture2\/Bindle\/[^\/]*\).*/\1/g'))
 
 if [ ${#NODES[@]} = 0 ] ; then

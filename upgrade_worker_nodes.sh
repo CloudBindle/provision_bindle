@@ -1,4 +1,5 @@
 #!/bin/bash
+set -e
 WORKFLOW_VERSION=$1
 if [ -n "$WORKFLOW_VERSION" ] ; then
   cd ~/architecture2/pancancer-bag

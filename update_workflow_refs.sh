@@ -1,6 +1,7 @@
 #!/bin/bash 
 # This script will update files in pancancer-bag and monitoring-bag.
 # TODO: Also update: workflow-decider: conf/sites/decider.oicr.ini ; conf/sites/decider.dkfz.32.ini ; conf/sites/decider.dkfz.64.ini ; cron/status.aws-oregon.cron ; cron/status.aws-ireland.cron
+set -e
 print_help()
 {
   cat <<xxxHELPTEXT
@@ -100,7 +101,11 @@ if [  -n "$WORKFLOW_VERSION" ] ; then
   # Update monitoring-bag/roles/client/vars/main.yml
   sed -i -e 's/\(workflow_version: SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/monitoring-bag/roles/client/vars/main.yml
   update_file_in_repo "main.yml" "roles/client/vars" "monitoring-bag"
- 
+
+  # architecture-setup has a reference to the workflow version.
+  sed -i -e 's/\(workflow_version: \)\(\".*\"\)/\1\"'$WORKFLOW_VERSION'\"/g' ~/architecture-setup/roles/bindle-profiles/vars/main.yml
+  update_file_in_repo "main.yml" "roles/bindle-profiles/vars" "architecture-setup"
+
   #############################################################################
   #
   # Updates for workflow-decider

@@ -79,7 +79,7 @@ else
         echo "File downloaded to $VARS_FILE"
         #If file download was OK, run ansible
         echo "Running architecture-setup with updated dependencies..."
-        sudo ansible-playbook -i inventory site.yml
+        ansible-playbook -i inventory site.yml
     fi
 fi
 
