@@ -57,7 +57,7 @@ do
     NODES_TO_UPDATE+=("$HOST_LINE")
   else
     echo "Worker has not completed, message received by Ansible: $ANSIBLE_STD_OUT"
-    if [ ! $ANSIBLE_STD_ERR = '' ] ; then 
+    if [ ! "$ANSIBLE_STD_ERR" = '' ] ; then 
       echo "Std Err: $ANSIBLE_STD_ERR"
     fi
   fi
