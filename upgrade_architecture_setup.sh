@@ -45,10 +45,28 @@ xxxEndOfHelpxxx
     esac
 done
 echo "$GIT_USER"
-echo "$VERSION_NUM"
+echo "architecture-setup version: $VERSION_NUM"
 VARS_PATH=roles/bindle-profiles/vars
 VARS_FILE=$VARS_PATH/main.yml
 
+# Before trying to upgrade anything, make sure none of the repos have changed files. 
+# It's better to do it now than to let Ansible get halfway through the playbook (it could take
+# a few minutes!) and then fail.
+REPOS=( ~/architecture2/pancancer-bag ~/architecture2/monitoring-bag ~/architecture2/Bindle ~/architecture2/seqware-bag ~/architecture2/workflow-decider )
+echo "Do any of your architecture2 repos have changes in them?"
+for r in "${REPOS[@]}"
+do
+  cd $r
+  NUM_CHANGES=$(git status --short -uno | grep "^ M \|^ A \|^ D \|^ R \|^ C \|^ U " | wc --lines)
+  echo "$NUM_CHANGES in $r"
+  if [ "$NUM_CHANGES" -gt 0 ] ; then
+    printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r\n\n"
+    # let's actually *show* them the issues, in summary.
+    git status --short -uno 
+    exit
+  fi
+done
+cd ~/architecture-setup
 # let's back up the old one, just in case they still want it.
 DATE_STR=$(date +%Y%m%d_%H%M%S)
 cp $VARS_FILE $VARS_PATH/main_${DATE_STR}_yml.bkup
@@ -70,10 +88,8 @@ else
     RESPONSE_3=$(echo $RESPONSE_2 | sed 's/.* *\"content\": \"\([^\"]*\).*/\1/g')
     # Decode to file.
     echo $RESPONSE_3 | base64 --decode > $VARS_FILE
-
     FILESIZE=$(stat -c%s "$VARS_FILE")
-
-    if [ $FILESIZE == 0 ] ; then
+    if [ $FILESIZE == 0 ] ; then 
         echo "Error! No file was downloaded for version $VERSION_NUM"
     else
         echo "File downloaded to $VARS_FILE"
