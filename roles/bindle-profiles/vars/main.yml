@@ -5,5 +5,5 @@ seqware_bag_git_branch: "TestTag"
 pancancer_bag_git_branch: "1.0-beta.2"
 monitoring_bag_git_branch: "TestTag"
 decider_git_branch: "TestTag"
-worfklow_version: "1.0.5"
+workflow_version: "1.0.5"
 user_name: ubuntu
