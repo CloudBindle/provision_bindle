@@ -26,7 +26,7 @@ for node_dir in "${NODES[@]}"
 do
   echo "[host_$n]" >> candidate_nodes_for_update_inventory
   MACHINE_NAME=$(basename $node_dir)
-  NODE_INVENTORY=$(cat "$node_dir"*/inventory | grep ansible_ssh_host)
+  NODE_INVENTORY=$(cat "$node_dir"/inventory | grep ansible_ssh_host)
   NODE_INVENTORY=$(echo $NODE_INVENTORY | sed 's/master /'$MACHINE_NAME' /g')
   echo -e $NODE_INVENTORY'\n' >> candidate_nodes_for_update_inventory
   n=$((n + 1))
