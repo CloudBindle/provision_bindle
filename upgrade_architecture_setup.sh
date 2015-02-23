@@ -54,6 +54,7 @@ VARS_FILE=$VARS_PATH/main.yml
 # a few minutes!) and then fail.
 REPOS=( ~/architecture2/pancancer-bag ~/architecture2/monitoring-bag ~/architecture2/Bindle ~/architecture2/seqware-bag ~/architecture2/workflow-decider )
 echo "Do any of your architecture2 repos have changes in them?"
+REPOS_HAVE_CHANGES=0
 for r in "${REPOS[@]}"
 do
   cd $r
@@ -63,9 +64,13 @@ do
     printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r (untracked files NOT shown)\n\n"
     # let's actually *show* them the issues (but ignore the untracked files), in summary.
     git status --short -uno
-    exit
+    REPOS_HAVE_CHANGES=1
   fi
 done
+if [ "$REPOS_HAVE_CHANGES" -eq 1 ] ; then
+  echo "Some repositories have changes in tracked files. Please fix this before continuing. Now exiting..."
+  exit
+fi
 cd ~/architecture-setup
 # let's back up the old one, just in case they still want it.
 DATE_STR=$(date +%Y%m%d_%H%M%S)
