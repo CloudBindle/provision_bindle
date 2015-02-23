@@ -37,6 +37,8 @@
        dest=/home/{{ user_name }}/architecture2/workflow-decider
        version={{ decider_git_branch }}
        
-- name: Run decider install script in Bash (ugly)
-  shell: bash /home/{{ user_name }}/architecture2/workflow-decider/install creates:/home/{{ user_name }}/workflow-decider-installed
+- name: Run workflow-decider installation playbook
+  shell: chdir=/home/{{ user_name }}/architecture2/workflow-decider/install
+         ansible-playbook -i inventory site.yml
+         creates=/home/{{ user_name }}/architecture2/workflow-decider/install-created
 
