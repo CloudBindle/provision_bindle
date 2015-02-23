@@ -42,9 +42,14 @@ Options:
   -h			- Prints this help text.
 xxxEndOfHelpxxx
             exit
+            ;;
     esac
 done
-echo "$GIT_USER"
+# echo "$GIT_USER"
+LOG_FILE=$(basename $BASH_SOURCE).log
+echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
+{
+
 echo "architecture-setup version: $VERSION_NUM"
 VARS_PATH=roles/bindle-profiles/vars
 VARS_FILE=$VARS_PATH/main.yml
@@ -52,19 +57,21 @@ VARS_FILE=$VARS_PATH/main.yml
 # Before trying to upgrade anything, make sure none of the repos have changed files. 
 # It's better to do it now than to let Ansible get halfway through the playbook (it could take
 # a few minutes!) and then fail.
-REPOS=( ~/architecture2/pancancer-bag ~/architecture2/monitoring-bag ~/architecture2/Bindle ~/architecture2/seqware-bag ~/architecture2/workflow-decider )
+REPOS=( ~/architecture2/pancancer-bag ~/architecture2/monitoring-bag ~/architecture2/Bindle ~/architecture2/seqware-bag ~/architecture2/workflow-decider ~/architecture-setup )
 echo "Do any of your architecture2 repos have changes in them?"
 REPOS_HAVE_CHANGES=0
 for r in "${REPOS[@]}"
 do
-  cd $r
-  NUM_CHANGES=$(git status --short -uno | grep '^[^?]\{2\}' | wc --lines)
-  echo "$NUM_CHANGES in $r"
-  if [ "$NUM_CHANGES" -gt 0 ] ; then
-    printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r (untracked files NOT shown)\n\n"
-    # let's actually *show* them the issues (but ignore the untracked files), in summary.
-    git status --short -uno
-    REPOS_HAVE_CHANGES=1
+  if [ -d $r ] ; then
+    cd $r
+    NUM_CHANGES=$(git status --short -uno | grep '^[^?]\{2\}' | wc --lines)
+    echo "$NUM_CHANGES in $r"
+    if [ "$NUM_CHANGES" -gt 0 ] ; then
+      printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r (untracked files NOT shown)\n\n"
+      # let's actually *show* them the issues (but ignore the untracked files), in summary.
+      git status --short -uno
+      REPOS_HAVE_CHANGES=1
+    fi
   fi
 done
 if [ "$REPOS_HAVE_CHANGES" -eq 1 ] ; then
@@ -75,8 +82,15 @@ cd ~/architecture-setup
 # let's back up the old one, just in case they still want it.
 DATE_STR=$(date +%Y%m%d_%H%M%S)
 cp $VARS_FILE $VARS_PATH/main_${DATE_STR}_yml.bkup
-
-RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
+CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
+if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
+  echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
+  echo $CHECKOUT_MESSAGE
+  exit
+else
+  echo $CHECKOUT_MESSAGE
+fi
+#RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
 
 if [[ $RESPONSE =~ \"message\"\: ]] ; then 
     MESSAGE=$(echo $RESPONSE | sed 's/{ \"message\"\: \"\([^\"]*\).*$/\1/g')
@@ -94,14 +108,15 @@ else
     # Decode to file.
     echo $RESPONSE_3 | base64 --decode > $VARS_FILE
     FILESIZE=$(stat -c%s "$VARS_FILE")
-    if [ $FILESIZE == 0 ] ; then 
-        echo "Error! No file was downloaded for version $VERSION_NUM"
-    else
-        echo "File downloaded to $VARS_FILE"
+#    if [ $FILESIZE == 0 ] ; then 
+#        echo "Error! No file was downloaded for version $VERSION_NUM"
+#    else
+        echo "File downloaded to architecture-setup/$VARS_FILE"
         #If file download was OK, run ansible
         echo "Running architecture-setup with updated dependencies..."
+        export PYTHONUNBUFFERED=1
         ansible-playbook -i inventory site.yml
-    fi
+#    fi
 fi
-
-
+} | tee -a $LOG_FILE
+echo "[ End Log, "$(date)" ]">>$LOG_FILE
