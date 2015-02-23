@@ -5,7 +5,7 @@ CURL_URL_PARAM=""
 VERSION_NUM=""
 while getopts "h :u:v:" opt; do
     case "$opt" in
-        u)
+        u)  #TODO: Add the ability to authenticate with a github token file.
             CURL_USER=" -u $OPTARG"
             GIT_USER="$OPTARG"
             ;;
@@ -57,12 +57,12 @@ echo "Do any of your architecture2 repos have changes in them?"
 for r in "${REPOS[@]}"
 do
   cd $r
-  NUM_CHANGES=$(git status --short -uno | grep "^ M \|^ A \|^ D \|^ R \|^ C \|^ U " | wc --lines)
+  NUM_CHANGES=$(git status --short -uno | grep '^[^?]\{2\}' | wc --lines)
   echo "$NUM_CHANGES in $r"
   if [ "$NUM_CHANGES" -gt 0 ] ; then
-    printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r\n\n"
-    # let's actually *show* them the issues, in summary.
-    git status --short -uno 
+    printf "You cannot upgrade architecture-setup until you resolve $NUM_CHANGES potential repository conflicts in $r (untracked files NOT shown)\n\n"
+    # let's actually *show* them the issues (but ignore the untracked files), in summary.
+    git status --short -uno
     exit
   fi
 done
