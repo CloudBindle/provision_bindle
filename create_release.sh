@@ -8,21 +8,15 @@
 # monitoring-bag
 # seqware-bag
 # Bindle
+# architecture-setup
 
-# Check that we have version 4+ of bash.
-BASH_MAJOR_VERSION=${BASH_VERSION:0:1}
-if [ "$BASH_MAJOR_VERSION" -le 3 ] ; then
-  echo "You need bash version 4 or greater. You are currently running: \$BASH_VERSION=$BASH_VERSION"
-  exit
-fi
-
+# Help function
 print_help()
 {
   cat <<xxxHELPTEXT
 Usage:
-  bash create_release.sh -n release_name [-t][-h]
+  bash create_release.sh [-t][-h]
 
--n release_name  - The name to use when creating release tags.
 -t               - Optional. The script will execute, but will not attempt
                    to modify any repositories. Releases will NOT be created,
                    modified files will NOT be checked in.
@@ -32,56 +26,6 @@ roles/bindle-profiles/vars/main.yml is upated correctly.
 xxxHELPTEXT
 exit
 }
-
-if [ $# -lt 1 ] ; then
-  print_help
-fi
-
-TEST_MODE="false"
-# Check for the test flag
-while getopts ":htn:" opt ; do
-  case $opt in
-   h)
-      print_help
-      ;;
-    n)
-      NEW_TAG=$OPTARG
-      ;;
-    t)
-      TEST_MODE=true
-      ;;
-    \?)
-      printf "Invalid option: -$OPTARG\n\n">&2
-      print_help
-      ;;
-    :)
-      printf "Option -$OPTARG requires an argument.\n\n" >&2
-      print_help
-      ;;
-  esac
-done
-
-if [ "$TEST_MODE" == "true" ] ; then
-  echo "Test flag has been set. No commits will be made."
-else
-  echo "*** Test flag is NOT set. Commits WILL happen! ***"
-fi
-
-# Check that there is a github token file.
-if [ ! -e github.token ] ; then
-  echo "You must have a valid github authentication token, stored in a local file named \"github.token\". This process won\'t work without it."
-  exit
-fi
-
-# Check that the user provided a tag name.
-# TODO: Agree on a way to generate tag names automatically, maybe?
-# NEW_TAG=$1
-if [ "$NEW_TAG" = '' ] ; then 
-  echo "You must provide a tag name for any releases that will be created! Exiting."
-  exit
-fi
-
-declare -a info
 
 # Examine the header dump from curl in header.txt and exit the script if status is not 200 OK
 process_curl_status()
@@ -96,19 +40,32 @@ process_curl_status()
   fi
 }
 
-# This function will get the published_at date and tag_name of the most recent release of architecture-setup
-get_latest_release()
+# Generates a new version number. For example, "1.2.3" will become "1.2.4". "1.5-alpha" will become "1.5-alpha.1"
+increment_version()
 {
-  local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic \
-                     https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/releases --dump-header header.txt) 
-
-  process_curl_status "$raw_result"
-  local filtered_result=$(echo $raw_result |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')  
-
-  #global info array will have tag name at index 0, release published_at at index 1
-  info=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')"
-         "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
+  local version="$1"
+  local prefix=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\1/')
+  local last_digit=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\2/')
+  if [ -n "$last_digit" ] ; then
+    last_digit=$(($last_digit+1))
+  else
+    # if, for some reason, the version number does not end in a digit (such as "1.2.3.beta"),
+    # we'll just add a numeric suffix of ".1", so it will become "1.2.3.beta.1"
+    last_digit="1"
+  fi
+  echo "${prefix}.${last_digit}"
 }
+
+LOG_FILE=$(basename $BASH_SOURCE).log
+echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
+{
+
+# Check that we have version 4+ of bash.
+BASH_MAJOR_VERSION=${BASH_VERSION:0:1}
+if [ "$BASH_MAJOR_VERSION" -le 3 ] ; then
+  echo "You need bash version 4 or greater. You are currently running: \$BASH_VERSION=$BASH_VERSION"
+  exit
+fi
 
 NUM_COMMITS=0
 # This function returns the number of new commits that have happened in a repository since a given date.
@@ -121,11 +78,68 @@ num_new_commits()
   NUM_COMMITS=$(echo "$result"| jq 'length')
 }
 
-get_latest_release
-RELEASE_DATE=${info[1]}
-TAG=${info[0]}
+declare -a RELEASE_INFO
+# This function will get the published_at date and tag_name of the most recent release of architecture-setup
+get_latest_release()
+{
+  local repo_name=$1
+  local raw_result=$(curl -s -u `cat github.token`:x-oauth-basic \
+                     https://api.github.com/repos/$repo_name/releases --dump-header header.txt) 
+
+  process_curl_status "$raw_result"
+  local filtered_result=$(echo $raw_result |  jq '[ .[] | {"p": .published_at, "t": .tag_name  }] | sort_by(.p) | reverse | .[0]')  
+
+  #global info array will have tag name at index 0, release published_at at index 1
+  RELEASE_INFO=( "$(echo $filtered_result | grep \"t\": | sed 's/.* \"t\": \"\([^\"]*\)\".*/\1/g')"
+         "$(echo $filtered_result | grep \"p\": | sed 's/.* \"p\": \"\([^\"]*\)\".*/\1/g')" )
+}
+
+TEST_MODE="false"
+# Check for the test flag
+for arg in "$@"
+do
+  case $arg in
+    -h)
+       print_help
+       ;;
+    -t)
+       TEST_MODE="true"
+       ;;
+  esac
+done
+
+if [ "$TEST_MODE" == "true" ] ; then
+  echo "Test flag has been set. No commits will be made."
+else
+  echo "*** Test flag is NOT set. ***"
+  echo "Please confirm that you want to commit changes to github [y/n]:"
+  read -r user_response
+  if [ "$user_response" == "n" ] ; then
+    echo "Reverting back to test mode."
+    TEST_MODE="false"
+  elif [ "$user_response" == "y" ] ; then
+    echo "User has confirmed: TEST_MODE is off. Repositories will be updated."
+    TEST_MODE="true"
+  else
+    echo "Aborting: Invalid response: $user_response"
+    exit
+  fi
+fi
+
+# Check that there is a github token file.
+if [ ! -e github.token ] ; then
+  echo "You must have a valid github authentication token, stored in a local file named \"github.token\". This process won\'t work without it."
+  exit
+fi
+
+
+get_latest_release "ICGC-TCGA-PanCancer/architecture-setup"
+RELEASE_DATE=${RELEASE_INFO[1]}
+TAG=${RELEASE_INFO[0]}
 echo "Most recent release date: $RELEASE_DATE"
 echo "Most recent release tag: $TAG"
+NEW_TAG=$(increment_version "$TAG")
+printf "New tag for architecture-setup: $NEW_TAG\n\n"
 
 #These repositories will be examined for commits that have occured since the date of the last architecture-setup release.
 REPOS=("ICGC-TCGA-PanCancer/pancancer-bag"
@@ -146,17 +160,20 @@ declare -A REPO_VAR_VERS
 for r in "${REPOS[@]}"
 do
   echo "Checking for new commits in $r..."
+  get_latest_release "$r"
+  echo "Latest release is ${RELEASE_INFO[0]}, released on ${RELEASE_INFO[1]}"
   num_new_commits "$r" "$RELEASE_DATE"
   echo "Number of commits since most recent release: $NUM_COMMITS"
   if [ "$NUM_COMMITS" -gt 0 ] ; then
-    printf "New release must be created!\nRelease will be tagged as: $NEW_TAG\n\n"
+    new_version=$(increment_version "${RELEASE_INFO[0]}")
+    printf "New release must be created!\nRelease will be tagged as: $new_version\n\n"
     if [ "$TEST_MODE" == "false" ] ; then
-      printf "Creating release with tag $NEW_TAG for repo $r\n\n"
+      printf "Creating release with tag $new_version for repo $r\n\n"
       # Create the new tag on the repo for the release. TODO: The value for "draft" could be a parameter. Also, the value for "body".
-      NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$NEW_TAG'", "name": "'$NEW_TAG'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
+      NEW_RELEASE_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"tag_name": "'$new_version'", "name": "'$new_version'", "body": "Generated release", "draft": true}'  https://api.github.com/repos/$r/releases --dump-header header.txt)
       process_curl_status "$NEW_RELEASE_RESULT"
     fi
-    REPO_VAR_VERS[$r]=$NEW_TAG
+    REPO_VAR_VERS[$r]=$new_version
   else
     printf "No new commits, no new release is needed.\n\n"
   fi
@@ -188,4 +205,5 @@ if [ "$TEST_MODE" == "false" ] ; then
   process_curl_status "$NEW_RELEASE_RESULT"
 fi
 
-
+} | tee -a $LOG_FILE
+echo "[ End Log, "$(date)" ]">>$LOG_FILE
