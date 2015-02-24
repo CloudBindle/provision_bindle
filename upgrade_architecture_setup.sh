@@ -1,55 +1,46 @@
 #!/bin/bash
-CURL_USER=""
-GIT_USER=""
-CURL_URL_PARAM=""
 VERSION_NUM=""
-while getopts "h :u:v:" opt; do
+LOG_FILE=$(basename $BASH_SOURCE).log
+echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
+{
+
+while getopts "hv:" opt; do
     case "$opt" in
-        u)  #TODO: Add the ability to authenticate with a github token file.
-            CURL_USER=" -u $OPTARG"
-            GIT_USER="$OPTARG"
+      \?)
+            #echo "Option -$opt requires an argument"
+            exit
             ;;
-        v)
-            CURL_URL_PARAM="ref=$OPTARG"
+       :)
+            echo "Option -v is required."
+            exit
+            ;;
+       v)
             VERSION_NUM=$OPTARG
             ;;
-        h)
+       h)
 cat <<xxxEndOfHelpxxx
 Upgrade architecture-setup:
 
-This script will upgrade your current architecture-setup by downloading a newer
-version of the ansible file which contains references to architecture-setup's
-dependency repositories. 
+This script will upgrade your current architecture-setup by checking out a
+specified label of architecture-setup, and then running the architecture-
+setup playbook.
 
-A backup of your old main.yml file will be created before the new one is
-downloaded.
+This process will fail if you have modified any files in the architecture2
+repositories that are tracked by git.
 
 Options:
-  -u <github user name>	- A github username to use for authentication with the
-                          github API when downloading files.
-                          This is not necessary, but it is a good idea.
-                          Unauthenticated requests to the API may restricted to
-                          a certain number of respones per hour, per IP address.
-
   -v <version number>	- A version of architecture-setup that you wish to
                           upgrade.
-                          This is optional.
-                          If left blank, no version number will be sent to
-                          github and
-                          by default, the most recent version will be
-                          downloaded.
-
   -h			- Prints this help text.
 xxxEndOfHelpxxx
             exit
             ;;
     esac
 done
-# echo "$GIT_USER"
-LOG_FILE=$(basename $BASH_SOURCE).log
-echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
-{
-
+if [ -z $VERSION_NUM ] ; then
+  echo "You must specify a verion of architecture-setup with -v"
+  exit
+fi
 echo "architecture-setup version: $VERSION_NUM"
 VARS_PATH=roles/bindle-profiles/vars
 VARS_FILE=$VARS_PATH/main.yml
