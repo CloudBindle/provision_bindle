@@ -78,45 +78,20 @@ if [ "$REPOS_HAVE_CHANGES" -eq 1 ] ; then
   echo "Some repositories have changes in tracked files. Please fix this before continuing. Now exiting..."
   exit
 fi
+
 cd ~/architecture-setup
-# let's back up the old one, just in case they still want it.
-DATE_STR=$(date +%Y%m%d_%H%M%S)
-cp $VARS_FILE $VARS_PATH/main_${DATE_STR}_yml.bkup
-#CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
-#if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
-#  echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
-#  echo $CHECKOUT_MESSAGE
-#  exit
-#else
-#  echo $CHECKOUT_MESSAGE
-#fi
-RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
-
-if [[ $RESPONSE =~ \"message\"\: ]] ; then 
-    MESSAGE=$(echo $RESPONSE | sed 's/{ \"message\"\: \"\([^\"]*\).*$/\1/g')
-    echo "A message was detected:"
-    echo \"$MESSAGE\"
+CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
+# If there are checkout errors, display them...
+if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
+  echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
+  echo $CHECKOUT_MESSAGE
+  exit
+# ...Otherwise, run the ansible playbook.
 else
-    # TODO: Find a nice clean way to do these four commands in a single step in bash. It worked from the command line, not sure why it didn't work right in script.
-
-    # find the line with content.
-    RESPONSE_1=$(echo $RESPONSE | grep \"content\")
-    # Response will actually contain "\n" so that it can be nicely formatted, but that will break base64 decode so we need to remove them.
-    RESPONSE_2=$(echo $RESPONSE_1 | sed 's/\\n//g')
-    # Extract just the encoded conent
-    RESPONSE_3=$(echo $RESPONSE_2 | sed 's/.* *\"content\": \"\([^\"]*\).*/\1/g')
-    # Decode to file.
-    echo $RESPONSE_3 | base64 --decode > $VARS_FILE
-    FILESIZE=$(stat -c%s "$VARS_FILE")
-    if [ $FILESIZE == 0 ] ; then 
-        echo "Error! No file was downloaded for version $VERSION_NUM"
-    else
-        echo "File downloaded to architecture-setup/$VARS_FILE"
-        #If file download was OK, run ansible
-        echo "Running architecture-setup with updated dependencies..."
-        export PYTHONUNBUFFERED=1
-        ansible-playbook -i inventory site.yml
-    fi
+  echo $CHECKOUT_MESSAGE
+  echo "Running architecture-setup with updated dependencies..."
+  export PYTHONUNBUFFERED=1
+  ansible-playbook -i inventory site.yml
 fi
 } | tee -a $LOG_FILE
 echo "[ End Log, "$(date)" ]">>$LOG_FILE
