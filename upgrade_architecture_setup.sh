@@ -82,15 +82,15 @@ cd ~/architecture-setup
 # let's back up the old one, just in case they still want it.
 DATE_STR=$(date +%Y%m%d_%H%M%S)
 cp $VARS_FILE $VARS_PATH/main_${DATE_STR}_yml.bkup
-CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
-if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
-  echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
-  echo $CHECKOUT_MESSAGE
-  exit
-else
-  echo $CHECKOUT_MESSAGE
-fi
-#RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
+#CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
+#if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
+#  echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
+#  echo $CHECKOUT_MESSAGE
+#  exit
+#else
+#  echo $CHECKOUT_MESSAGE
+#fi
+RESPONSE=$(curl -s ${CURL_USER} https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?"$CURL_URL_PARAM")
 
 if [[ $RESPONSE =~ \"message\"\: ]] ; then 
     MESSAGE=$(echo $RESPONSE | sed 's/{ \"message\"\: \"\([^\"]*\).*$/\1/g')
@@ -108,15 +108,15 @@ else
     # Decode to file.
     echo $RESPONSE_3 | base64 --decode > $VARS_FILE
     FILESIZE=$(stat -c%s "$VARS_FILE")
-#    if [ $FILESIZE == 0 ] ; then 
-#        echo "Error! No file was downloaded for version $VERSION_NUM"
-#    else
+    if [ $FILESIZE == 0 ] ; then 
+        echo "Error! No file was downloaded for version $VERSION_NUM"
+    else
         echo "File downloaded to architecture-setup/$VARS_FILE"
         #If file download was OK, run ansible
         echo "Running architecture-setup with updated dependencies..."
         export PYTHONUNBUFFERED=1
         ansible-playbook -i inventory site.yml
-#    fi
+    fi
 fi
 } | tee -a $LOG_FILE
 echo "[ End Log, "$(date)" ]">>$LOG_FILE
