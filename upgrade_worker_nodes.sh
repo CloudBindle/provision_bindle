@@ -9,13 +9,14 @@ if [ -n "$WORKFLOW_VERSION" ] ; then
   if [ ! -d workflow-update/roles/update_workflow/files ] ; then
     mkdir workflow-update/roles/update_workflow/files
   fi
+  DOWNLOAD_PATH=workflow-update/roles/update_workflow/files
   WORKFLOW_FILE=Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_"$WORKFLOW_VERSION"_SeqWare_1.1.0-alpha.5.zip
-  TARGET_FILE=workflow-update/roles/update_workflow/files/$WORKFLOW_FILE
+  TARGET_FILE=${DOWNLOAD_PATH}/${WORKFLOW_FILE}
   if [ ! -e $TARGET_FILE ] ; then
     echo "File $TARGET_FILE is not available locally. Downloading workflow now..."
     wget -O $TARGET_FILE https://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/$WORKFLOW_FILE
   else
-    echo "Requested file $TARGET_FILE already exists."
+    echo "Requested file $WORKFLOW_FILE already exists in $DOWNLOAD_PATH"
   fi
   cd workflow-update
   export PYTHONUNBUFFERED=1

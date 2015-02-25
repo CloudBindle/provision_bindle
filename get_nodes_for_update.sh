@@ -14,7 +14,7 @@ NODES=($(vagrant global-status | grep .*/Bindle/.* | sed 's/.*\(\/home\/ubuntu\/
 
 if [ ${#NODES[@]} = 0 ] ; then
   echo "Vagrant is not aware of any running nodes. Exiting..."
-  exit
+  exit 1
 fi
 
 # Write an inventory file containing all nodes that need to be checked to see if they can be updated.
@@ -74,4 +74,8 @@ if [ ${#NODES_TO_UPDATE[@]} -gt 0 ] ; then
   cp nodes_to_update_inventory ~/architecture2/pancancer-bag/workflow-update/inventory
 fi
 } | tee -a $LOG_FILE
+# because the script executes inside "{...} | tee", we need to capture the exit code
+# before writing the last line of th log file, and then return THAT exit code.
+SCRIPT_EXIT_CODE=${PIPESTATUS[0]}
 echo "[ End Log, "$(date)" ]">>$LOG_FILE
+exit $SCRIPT_EXIT_CODE
