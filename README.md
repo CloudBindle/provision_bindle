@@ -99,6 +99,8 @@ This will tell the script to download `Workflow_Bundle_SangerPancancerCgpCnIndel
 
 The output from this script will be in a file named upgrade_worker_nodes.sh.
 
+***
+
 ## Creating a new release
 
 It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. Please ensure that you have bash 4.* to execute this script. You will need to install the additional package `jq`:
