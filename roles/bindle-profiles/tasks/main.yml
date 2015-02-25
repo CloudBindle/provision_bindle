@@ -16,27 +16,38 @@
   git: repo=https://github.com/CloudBindle/Bindle
        dest=/home/{{ user_name }}/architecture2/Bindle
        version={{ bindle_git_branch }}
+       force=no
 
 - name: Checkout the Seqware git repo
   git: repo=https://github.com/SeqWare/seqware-bag.git
        dest=/home/{{ user_name }}/architecture2/seqware-bag
        version={{ seqware_bag_git_branch }}
+       force=no
 
 - name: Checkout the pancancer-bag git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
        dest=/home/{{ user_name }}/architecture2/pancancer-bag
        version={{ pancancer_bag_git_branch }}
+       force=no
 
 - name: Checkout the monitoring-bag git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
        dest=/home/{{ user_name }}/architecture2/monitoring-bag
        version={{ monitoring_bag_git_branch }}
+       force=no
        
 - name: Checkout the decider git repo
   git: repo=https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git
        dest=/home/{{ user_name }}/architecture2/workflow-decider
        version={{ decider_git_branch }}
+       force=no
        
-- name: Run decider install script in Bash (ugly)
-  shell: bash /home/{{ user_name }}/architecture2/workflow-decider/install creates:/home/{{ user_name }}/workflow-decider-installed
+#- name: Run decider install script in Bash (ugly)
+ # shell: bash /home/{{ user_name }}/architecture2/workflow-decider/install creates:/home/{{ user_name }}/workflow-decider-installed
 
+# TODO: Find a less ugly way to do this... Ideally, the out from a successful run should
+# be here too, not just the output from errors.
+- name: Run decider install from bash
+  shell: chdir=/home/{{ user_name }}/architecture2/workflow-decider/install
+         ansible-playbook -i inventory site.yml
+         creates=/home/{{ user_name }}/architecture2/workflow-decider/install-created
