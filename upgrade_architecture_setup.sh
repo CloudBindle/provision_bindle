@@ -8,11 +8,11 @@ while getopts "hv:" opt; do
     case "$opt" in
       \?)
             #echo "Option -$opt requires an argument"
-            exit
+            exit 1
             ;;
        :)
             echo "Option -v is required."
-            exit
+            exit 1
             ;;
        v)
             VERSION_NUM=$OPTARG
@@ -33,13 +33,13 @@ Options:
                           upgrade.
   -h			- Prints this help text.
 xxxEndOfHelpxxx
-            exit
+            exit 1
             ;;
     esac
 done
 if [ -z $VERSION_NUM ] ; then
   echo "You must specify a verion of architecture-setup with -v"
-  exit
+  exit 1
 fi
 echo "architecture-setup version: $VERSION_NUM"
 VARS_PATH=roles/bindle-profiles/vars
@@ -67,16 +67,21 @@ do
 done
 if [ "$REPOS_HAVE_CHANGES" -eq 1 ] ; then
   echo "Some repositories have changes in tracked files. Please fix this before continuing. Now exiting..."
-  exit
+  exit 1
 fi
 
 cd ~/architecture-setup
+CURRENT_VERSION=$(git name-rev --tags --name-only $(git rev-parse HEAD))
+if [ "$CURRENT_VERSION" == "$VERSION_NUM" ] ; then
+  echo "Your local architecture-setup is already at $CURRENT_VERSION, and there are no known differences in any of your repositories. The ansible playbook will not be run, as it is not necessary."
+  exit 0
+fi
 CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
 # If there are checkout errors, display them...
 if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
   echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
   echo $CHECKOUT_MESSAGE
-  exit
+  exit 1
 # ...Otherwise, run the ansible playbook.
 else
   echo $CHECKOUT_MESSAGE
@@ -85,4 +90,8 @@ else
   ansible-playbook -i inventory site.yml
 fi
 } | tee -a $LOG_FILE
+# because the script executes inside "{...} | tee", we need to capture the exit code
+# before writing the last line of th log file, and then return THAT exit code.
+SCRIPT_EXIT_CODE=${PIPESTATUS[0]}
 echo "[ End Log, "$(date)" ]">>$LOG_FILE
+exit $SCRIPT_EXIT_CODE
