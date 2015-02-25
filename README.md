@@ -105,16 +105,37 @@ It is possible to create a new release of architecture-setup from here using the
 
     sudo apt-get install jq
     
-You wil also need a github authentication token. Detailed instructions can be found [here](https://help.github.com/articles/creating-an-access-token-for-command-line-use/). The token should be saved in a file named `github.token`. You will need to ensure that your github account has permission to create releases and check in files on the relevant projects or this script may fail.
+You wil also need a github authentication token so that you can make changes to repositories. Detailed instructions can be found [here](https://help.github.com/articles/creating-an-access-token-for-command-line-use/). The token should be saved in a file named `github.token`. You will need to ensure that your github account has permission to create releases and check in files on the relevant projects or this script may fail.
 
 Creating a new release involves examining projects that architecture-setup depends on and if there have been any commits since the last release of architecture-setup, the dependencies will be updated with a new release and the `vars/main.yml` file will be updated to refer to these new releases and checked in. A new release of architecture-setup will also be created.
 
 Executing the script is done like this:
 
-    bash create_release.sh -n <RELEASE_NAME> [-t][-h]
+    bash create_release.sh [-t][-h]
     
-`-n <RELEASE_NAME>` is required. This will be used for the tag name for all projects that get updated in this release.
-
 `-t` is used to execute the script in test mode. When executed in test mode, no releases are created and no files are committed.
 
 `-h` will print help text.
+
+**NOTE:** It is *strongly* recommended that you run this at least once with test mode enabled (set the `-t` flag) to ensure that the results are what you would expect.
+
+The output of this script will be in a file named create_release.sh.log.
+
+##Updating references to the workflow version
+
+To update references to the workflow version in various files, you can use the script `update_workflow_refs.sh`. This script will update files that may contain references to specific workflow versions, but are generic files that should be updated when a new workflow is released. To use this script, you will need a github token file (see the section on "Creating a new release" for more information). Running the script looks like this:
+
+    update_workflow_refs.sh -w 1.0.6
+
+Currently, the files updated by this script are:
+ - pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
+ - monitoring-bag/roles/client/vars/main.yml
+ - architecture-setup/roles/bindle-profiles/main.yml
+ - workflow-decider/conf/sites/decider.oicr.ini
+ - workflow-decider/conf/decider.ini
+
+Users should be aware that if thay have hard-coded references to a specific workflow version in other files that are specific to their launcher, they may have to update those references on their own. Please get in touch if you think that there are additional files that should be updated by this process, but are not mentioned here.
+
+**NOTE:** It is *strongly* recommended that you run this at least once with test mode enabled (set the `-t` flag) to ensure that the results are what you would expect.
+
+The output of this script will be saved in a file named update_workflow_refs.sh.log
