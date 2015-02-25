@@ -1,5 +1,8 @@
 #!/bin/bash
 set -e
+LOG_FILE=$(basename $BASH_SOURCE).log
+echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
+{
 WORKFLOW_VERSION=$1
 if [ -n "$WORKFLOW_VERSION" ] ; then
   cd ~/architecture2/pancancer-bag
@@ -15,9 +18,11 @@ if [ -n "$WORKFLOW_VERSION" ] ; then
     echo "Requested file $TARGET_FILE already exists."
   fi
   cd workflow-update
+  export PYTHONUNBUFFERED=1
   ansible-playbook -i inventory site.yml
 else
   echo "You need to specify a workflow verion. Example:"
   echo "  upgrade_worker_nodes.sh 1.0.5"
 fi
-
+} | tee -a $LOG_FILE
+echo "[ End Log, "$(date)" ]">>$LOG_FILE

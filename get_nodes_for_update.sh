@@ -1,14 +1,13 @@
 #!/bin/bash
-set -e
-#TODO: This should value should come from user input
-#WORKFLOW_VERSION="1.0.4"
 WORKFLOW_VERSION=$1
-#TODO: This should value should come from user input
-#WORKFLOW_NAME="Workflow_Bundle_"
+#TODO: If This value should came from user input, it could make the script mode flexible.
 WORKFLOW_NAME=Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr
 # Probably several ways to get a list of worker nodes, but maybe best to just ask vagrant directly.
 # Get a list of everything that varant is managing (that's also in the architecture2/Bindle directory)
 # $NODES will be an array of directories of vagrant-managed workers.
+LOG_FILE=$(basename $BASH_SOURCE).log
+echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
+{
 echo "Getting list of workers from Vagrant"
 # NOTE: Eventually switch to Adam's inventory script
 NODES=($(vagrant global-status | grep .*/Bindle/.* | sed 's/.*\(\/home\/ubuntu\/architecture2\/Bindle\/[^\/]*\).*/\1/g'))
@@ -33,7 +32,6 @@ do
 done
 
 # Need to first copy status check script template.
-#cd ~/architecture2/monitoring-bag
 cp ~/architecture2/monitoring-bag/roles/client/templates/check-seqware-sanger-last-workflow-status.json.j2 ./check-seqware-sanger-last-workflow-status.sh
 # replace the Ansible variable with a real value.
 sed -i 's/{{ workflow_version }}/'$WORKFLOW_VERSION'/g' check-seqware-sanger-last-workflow-status.sh
@@ -49,6 +47,7 @@ do
   echo "Checking node:"
   HOST_LINE=$(grep -A 1 -e "\[host_$i\]" ~/architecture-setup/candidate_nodes_for_update_inventory | sed 's/\[host_'$i'\]//g')
   echo $HOST_LINE
+  export PYTHONUNBUFFERED=1
   ANSIBLE_RESULT=$(ansible host_$i -v -i ~/architecture-setup/candidate_nodes_for_update_inventory  -m script -a check-seqware-sanger-last-workflow-status.sh)
   ANSIBLE_STD_OUT=$(echo $ANSIBLE_RESULT |  sed 's/.*"stdout": "\([^"]*\)".*/\1/g')
   ANSIBLE_STD_ERR=$(echo $ANSIBLE_RESULT |  sed 's/.*"stderr": "\([^"]*\)".*/\1/g')
@@ -74,5 +73,5 @@ if [ ${#NODES_TO_UPDATE[@]} -gt 0 ] ; then
   cp ~/architecture2/pancancer-bag/workflow-update/inventory  ~/architecture2/pancancer-bag/workflow-update/inventory_${DATE_STRING}.bkup
   cp nodes_to_update_inventory ~/architecture2/pancancer-bag/workflow-update/inventory
 fi
-
-
+} | tee -a $LOG_FILE
+echo "[ End Log, "$(date)" ]">>$LOG_FILE
