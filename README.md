@@ -17,7 +17,7 @@ The result is a host that can be used to create new SeqWare images with pancance
 This playbook relies upon bindle's install playbook. 
 
     sudo apt-get install git
-    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
+    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git --recursive
     cd architecture-setup 
     bash setup.sh
     
