@@ -1,5 +1,5 @@
 #!/bin/bash
-set -e
+# set -e
 LOG_FILE=$(basename $BASH_SOURCE).log
 echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
 {
@@ -21,6 +21,11 @@ if [ -n "$WORKFLOW_VERSION" ] ; then
   cd workflow-update
   export PYTHONUNBUFFERED=1
   ansible-playbook -i inventory site.yml
+  #cd ~/architecture2/Bindle
+  #perl bin/generate_master_inventory_file_for_ansible.pl 
+  #echo "Creating a new cluster.json file"
+  #cd ~/architecture2/workflow-decider
+  #perl bin/create_cluster_json.pl --specific-workflow-version $WORKFLOW_VERSION --inventory-file ~/architecture2/pancancer-bag/workflow-update/inventory --workflow-name SangerPancancerCgpCnIndelSnvStr
 else
   echo "You need to specify a workflow verion. Example:"
   echo "  upgrade_worker_nodes.sh 1.0.5"
