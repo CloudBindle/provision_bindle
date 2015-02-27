@@ -4,14 +4,19 @@
 - hosts: bindle
   sudo: True
   tasks:
-  - { include: playbooks/Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
+  - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
         user_name: ubuntu,
         bindle_git_branch: master,
         bindle_config: aws.cfg}
 
 - hosts: bindle
+  vars:
+    architecture_setup_path: /home/ubuntu/subtree_test/architecture-setup
   roles: 
     - { role: bindle-profiles }
+
+- name: workflow-decider install
+  include: workflow-decider/install/site.yml 
 
 - hosts: bindle
   sudo: True
