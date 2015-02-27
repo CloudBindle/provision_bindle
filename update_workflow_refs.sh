@@ -68,8 +68,8 @@ update_file_in_repo()
     ENCODED_FILE=$(base64 ~/$repo_root_dir/$repo_name/$path_in_repo/$file_name | tr -d "\n")
     if [ "$TEST_MODE" == "false" ] ; then
       echo "Submitting updated $path_in_repo/$file_name for $repo_name"
-      #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
-      #process_curl_status "$COMMIT_RESULT"
+      COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
+      process_curl_status "$COMMIT_RESULT"
       UPDATED_FILES+=( "$repo_name/$path_in_repo/$file_name" )
     fi
   else
