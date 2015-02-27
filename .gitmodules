@@ -1,15 +1,20 @@
 [submodule "workflow-decider"]
 	path = workflow-decider
 	url = https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git
+	branch = develop
 [submodule "Bindle"]
 	path = Bindle
 	url = https://github.com/CloudBindle/Bindle.git
+	branch = develop
 [submodule "monitoring-bag"]
 	path = monitoring-bag
 	url = https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
+	branch = develop
 [submodule "pancancer-bag"]
 	path = pancancer-bag
 	url = https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
+	branch = develop
 [submodule "seqware-bag"]
 	path = seqware-bag
 	url = https://github.com/SeqWare/seqware-bag.git
+	branch = develop
