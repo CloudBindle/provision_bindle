@@ -48,7 +48,7 @@ VARS_FILE=$VARS_PATH/main.yml
 # Before trying to upgrade anything, make sure none of the repos have changed files. 
 # It's better to do it now than to let Ansible get halfway through the playbook (it could take
 # a few minutes!) and then fail.
-REPOS=( ~/architecture2/pancancer-bag ~/architecture2/monitoring-bag ~/architecture2/Bindle ~/architecture2/seqware-bag ~/architecture2/workflow-decider ~/architecture-setup )
+REPOS=( ~/architecture-setup/pancancer-bag ~/architecture-setup/monitoring-bag ~/architecture-setup/Bindle ~/architecture-setup/seqware-bag ~/architecture-setup/workflow-decider ~/architecture-setup )
 echo "Do any of your architecture2 repos have changes in them?"
 REPOS_HAVE_CHANGES=0
 for r in "${REPOS[@]}"
