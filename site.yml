@@ -11,7 +11,7 @@
 
 - hosts: bindle
   vars:
-    architecture_setup_path: /home/ubuntu/subtree_test/architecture-setup
+    architecture_setup_path: /home/ubuntu/architecture-setup
   roles: 
     - { role: bindle-profiles }
 
