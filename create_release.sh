@@ -44,8 +44,8 @@ process_curl_status()
 increment_version()
 {
   local version="$1"
-  local prefix=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\1/')
-  local last_digit=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\2/')
+  local prefix=$(echo $version | sed 's/\(.*\)\.\([^.]*\)/\1/')
+  local last_digit=$(echo $version | sed 's/\(.*\)\.\([^.]*\)/\2/')
   if [ -n "$last_digit" ] ; then
     last_digit=$(($last_digit+1))
   else
