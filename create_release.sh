@@ -116,10 +116,10 @@ else
   read -r user_response
   if [ "$user_response" == "n" ] ; then
     echo "Reverting back to test mode."
-    TEST_MODE="false"
+    TEST_MODE="true"
   elif [ "$user_response" == "y" ] ; then
     echo "User has confirmed: TEST_MODE is off. Repositories will be updated."
-    TEST_MODE="true"
+    TEST_MODE="false"
   else
     echo "Aborting: Invalid response: $user_response"
     exit
