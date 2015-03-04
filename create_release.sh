@@ -189,13 +189,13 @@ FILECONTENTS=$(cat ./roles/bindle-profiles/vars/main.yml)
 printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 
 # Update main.yml in repo
-OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
+OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
 ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
 if [ "$TEST_MODE" == "false" ] ; then
   echo "Submitting updated main.yml architecture-setup"
-  COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
+  COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
   process_curl_status "$COMMIT_RESULT"
 fi
 
