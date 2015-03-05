@@ -68,8 +68,8 @@ update_file_in_repo()
     ENCODED_FILE=$(base64 ~/$repo_root_dir/$repo_name/$path_in_repo/$file_name | tr -d "\n")
     if [ "$TEST_MODE" == "false" ] ; then
       echo "Submitting updated $path_in_repo/$file_name for $repo_name"
-      #COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
-      #process_curl_status "$COMMIT_RESULT"
+      COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"'$file_name'","message":"Updated with new workflow version number","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/$repo_name/contents/$path_in_repo/$file_name --dump-header header.txt )
+      process_curl_status "$COMMIT_RESULT"
       UPDATED_FILES+=( "$repo_name/$path_in_repo/$file_name" )
     fi
   else
@@ -120,13 +120,13 @@ fi
 
 if [  -n "$WORKFLOW_VERSION" ] ; then
   # update the vars file for George's workflow-update playbook so that it will download a new version of the workflow.
-  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture2/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
-  update_file_in_repo "main.yml" "workflow-update/roles/update_workflow/vars" "pancancer-bag" "architecture2"
+  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture-setup/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
+  update_file_in_repo "main.yml" "workflow-update/roles/update_workflow/vars" "pancancer-bag" "architecture-setup"
 
   # monitoring-bag also contains a reference to the workflow version so it also needs to be updated.
   # Update monitoring-bag/roles/client/vars/main.yml
-  sed -i -e 's/^\(workflow_version: SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/monitoring-bag/roles/client/vars/main.yml
-  update_file_in_repo "main.yml" "roles/client/vars" "monitoring-bag" "architecture2"
+  sed -i -e 's/^\(workflow_version: SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture-setup/monitoring-bag/roles/client/vars/main.yml
+  update_file_in_repo "main.yml" "roles/client/vars" "monitoring-bag" "architecture-setup"
 
   # architecture-setup has a reference to the workflow version.
   sed -i -e 's/^\(workflow_version: \)\(\".*\"\)/\1\"'$WORKFLOW_VERSION'\"/g' ~/architecture-setup/roles/bindle-profiles/vars/main.yml
@@ -135,12 +135,12 @@ if [  -n "$WORKFLOW_VERSION" ] ; then
   #############################################################################
   #
   # Updates for workflow-decider
-  sed -i -e 's/^\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/workflow-decider/conf/sites/decider.oicr.ini
-  sed -i -e 's/\(pem-file=.*SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(.*\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture2/workflow-decider/conf/sites/decider.oicr.ini
-  update_file_in_repo "decider.oicr.ini" "conf/sites" "workflow-decider" "architecture2"
+  sed -i -e 's/^\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture-setup/workflow-decider/conf/sites/decider.oicr.ini
+  sed -i -e 's/\(pem-file=.*SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(.*\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture-setup/workflow-decider/conf/sites/decider.oicr.ini
+  update_file_in_repo "decider.oicr.ini" "conf/sites" "workflow-decider" "architecture-setup"
 
-  sed -i -e 's/^\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture2/workflow-decider/conf/decider.ini
-  update_file_in_repo "decider.ini" "conf" "workflow-decider" "architecture2"
+  sed -i -e 's/^\(workflow-version=\)\(.*\)/\1'$WORKFLOW_VERSION'/g' ~/architecture-setup/workflow-decider/conf/decider.ini
+  update_file_in_repo "decider.ini" "conf" "workflow-decider" "architecture-setup"
 
          printf "\n##########################\n${#UPDATED_FILES[@]} files that were updated:\n"
   for r in "${UPDATED_FILES[@]}" 

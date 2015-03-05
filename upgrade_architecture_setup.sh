@@ -25,8 +25,8 @@ This script will upgrade your current architecture-setup by checking out a
 specified label of architecture-setup, and then running the architecture-
 setup playbook.
 
-This process will fail if you have modified any files in the architecture2
-repositories that are tracked by git.
+This process will fail if you have modified any files in the architecture-setup
+submodule repositories that are tracked by git.
 
 Options:
   -v <version number>	- A version of architecture-setup that you wish to
@@ -48,8 +48,8 @@ VARS_FILE=$VARS_PATH/main.yml
 # Before trying to upgrade anything, make sure none of the repos have changed files. 
 # It's better to do it now than to let Ansible get halfway through the playbook (it could take
 # a few minutes!) and then fail.
-REPOS=( ~/architecture-setup/pancancer-bag ~/architecture-setup/monitoring-bag ~/architecture-setup/Bindle ~/architecture-setup/seqware-bag ~/architecture-setup/workflow-decider ~/architecture-setup )
-echo "Do any of your architecture2 repos have changes in them?"
+REPOS=( ~/architecture-setup/pancancer-bag ~/architecture-setup/monitoring-bag ~/architecture-setup/Bindle ~/architecture-setup/seqware-bag ~/architecture-setup/workflow-decider  )
+echo "Do any of your repos have changes in them?"
 REPOS_HAVE_CHANGES=0
 for r in "${REPOS[@]}"
 do
