@@ -41,7 +41,7 @@ Navigate to ~/architecture2 and follow the rest of the pancancer-info instructio
 ***FOR PRE-1.0.7 LAUNCHERS:***
 New scripts were added to architecture-setup 1.0.7 to make upgrading to newer version easier. If your launcher has a version that is older than 1.0.7, you should follow these instructions to catch it up:
 
-1. Download this script: https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/1.0.7/update_archsetup_to_1.0.7.sh <br/>
+1. Download this script: https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/1.0.7/update_archsetup_to_1.0.7.sh to your launcher.<br/>
 It will make a backup copy of your old `~/architecture-setup` directory, and then create a new one and check out architecture-setup 1.0.7
 2. `cd ~/architecture-setup`
 3. `bash setup.sh`
