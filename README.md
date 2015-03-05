@@ -103,11 +103,19 @@ The output from this script will be in a file named upgrade_worker_nodes.sh.
 
 ## Creating a new release
 
-It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. Please ensure that you have bash 4.* to execute this script. You will need to install the additional package `jq`:
+It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. To do this, you will need:
+
+ - bash 4.*
+ - jq 1.3 or better
+ - A github authentication token file
+
+You will need to install the additional package [jq](http://stedolan.github.io/jq/), at least version 1.3:
 
     sudo apt-get install jq
+
+If your ubuntu system is unable to get jq using apt-get, the compiled binary can also be downloaded here: http://stedolan.github.io/jq/download/
     
-You wil also need a github authentication token so that you can make changes to repositories. Detailed instructions can be found [here](https://help.github.com/articles/creating-an-access-token-for-command-line-use/). The token should be saved in a file named `github.token`. You will need to ensure that your github account has permission to create releases and check in files on the relevant projects or this script may fail.
+You wil need a github authentication token so that you can make changes to repositories. Detailed instructions can be found [here](https://help.github.com/articles/creating-an-access-token-for-command-line-use/). The token should be saved in a file named **`github.token`** in the `architecture-setup` directory. You will need to ensure that your github account has permission to create releases and check in files on the relevant projects or this script may fail.
 
 Creating a new release involves examining projects that architecture-setup depends on and if there have been any commits since the last release of architecture-setup, the dependencies will be updated with a new release and the `vars/main.yml` file will be updated to refer to these new releases and checked in. A new release of architecture-setup will also be created.
 
