@@ -105,7 +105,7 @@ The output from this script will be in a file named upgrade_worker_nodes.sh.
 
 It is possible to create a new release of architecture-setup from here using the script `create_release.sh`. To do this, you will need:
 
- - bash 4.*
+ - bash 4.* (If you are running on OS X, this can be installed via homebrew)
  - jq 1.3 or better
  - A github authentication token file
 
