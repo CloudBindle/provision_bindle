@@ -119,6 +119,8 @@ You wil need a github authentication token so that you can make changes to repos
 
 Creating a new release involves examining projects that architecture-setup depends on and if there have been any commits since the last release of architecture-setup, the dependencies will be updated with a new release and the `vars/main.yml` file will be updated to refer to these new releases and checked in. A new release of architecture-setup will also be created.
 
+All new releases created by this process are created as *draft* releases. This gives you the chance to accurately update the release notes for each repository's release (the script will only populate the release notes with a simple comment: "generated release"). The releases must be manually published after they have been created.
+
 Executing the script is done like this:
 
     bash create_release.sh [-t][-h]
