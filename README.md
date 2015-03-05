@@ -38,6 +38,20 @@ Navigate to ~/architecture2 and follow the rest of the pancancer-info instructio
 
 ## Upgrading to a new version
 
+***FOR PRE-1.0.7 LAUNCHERS:***
+New scripts were added to architecture-setup 1.0.7 to make upgrading to newer version easier. If your launcher has a version that is older than 1.0.7, you should follow these instructions to catch it up:
+
+1. Download this script: https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/1.0.7/update_archsetup_to_1.0.7.sh <br/>
+It will make a backup copy of your old `~/architecture-setup` directory, and then create a new one and check out architecture-setup 1.0.7
+2. `cd ~/architecture-setup`
+3. `bash setup.sh`
+4. `ansible-playbook -i inventory site.yml`
+5. `bash upgrade_launcher_and_workers.sh 1.0.7`
+
+Steps 1 through 4 will bring your architecture-setup up to date. Step 5 will upgrade your worker nodes.
+
+***FOR LAUNCHERS WITH VERSION 1.0.7 AND GREATER:***
+
 If you have a launcher that has an older version of architecture-setup and you wish to upgrade, you can upgrade your launcher using the scripts available:
 
  - `upgrade_architecture_setup.sh` This script will upgrade your architecture-setup to a specific release version. It will also re-run the architecture-setup ansible playbook.
