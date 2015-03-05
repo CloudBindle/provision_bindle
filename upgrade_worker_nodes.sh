@@ -26,6 +26,7 @@ if [ -n "$WORKFLOW_VERSION" ] ; then
   echo "Creating a new cluster.json file"
   cd ~/architecture2/workflow-decider
   perl bin/create_cluster_json.pl --specific-workflow-version $WORKFLOW_VERSION --inventory-file ~/architecture2/Bindle/inventory_for_cluster_json_generator --workflow-name SangerPancancerCgpCnIndelSnvStr > cluster_SangerPancancerCgpCnIndelSnvStr_${WORKFLOW_VERSION}.json
+  ln -s cluster_SangerPancancerCgpCnIndelSnvStr_${WORKFLOW_VERSION}.json cluster_SangerPancancerCgpCnIndelSnvStr.json
 else
   echo "You need to specify a workflow verion. Example:"
   echo "  upgrade_worker_nodes.sh 1.0.5"
