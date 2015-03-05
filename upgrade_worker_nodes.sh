@@ -22,7 +22,7 @@ if [ -n "$WORKFLOW_VERSION" ] ; then
   export PYTHONUNBUFFERED=1
   ansible-playbook -i inventory site.yml
   cd ~/architecture2/Bindle
-  perl bin/generate_master_inventory_file_for_ansible.pl > inventory_for_cluster_json_generator
+  perl bin/generate_master_inventory_file_for_ansible.pl $(wget -qO- http://instance-data/latest/meta-data/public-ipv4) > inventory_for_cluster_json_generator
   echo "Creating a new cluster.json file"
   cd ~/architecture2/workflow-decider
   perl bin/create_cluster_json.pl --specific-workflow-version $WORKFLOW_VERSION --inventory-file ~/architecture2/Bindle/inventory_for_cluster_json_generator --workflow-name SangerPancancerCgpCnIndelSnvStr > cluster_SangerPancancerCgpCnIndelSnvStr_${WORKFLOW_VERSION}.json
