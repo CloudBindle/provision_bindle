@@ -71,12 +71,12 @@ if [ "$REPOS_HAVE_CHANGES" -eq 1 ] ; then
 fi
 
 cd ~/architecture-setup
-CURRENT_VERSION=$(git name-rev --tags --name-only $(git rev-parse HEAD))
+CURRENT_VERSION=$(git name-rev --tags --name-only $(git rev-parse HEAD) )
 if [ "$CURRENT_VERSION" == "$VERSION_NUM" ] ; then
   echo "Your local architecture-setup is already at $CURRENT_VERSION, and there are no known differences in any of your repositories. The ansible playbook will not be run, as it is not necessary."
   exit 0
 fi
-CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM 2>&1)
+CHECKOUT_MESSAGE=$(git checkout $VERSION_NUM && git submodule init && git submodule update 2>&1)
 # If there are checkout errors, display them...
 if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
   echo "Could not checkout architecture-setup $VERSION_NUM. Error message is:"
