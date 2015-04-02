@@ -41,9 +41,6 @@
        dest=/home/{{ user_name }}/architecture2/workflow-decider
        version={{ decider_git_branch }}
        force=no
-       
-#- name: Run decider install script in Bash (ugly)
- # shell: bash /home/{{ user_name }}/architecture2/workflow-decider/install creates:/home/{{ user_name }}/workflow-decider-installed
 
 # TODO: Find a less ugly way to do this... Ideally, the out from a successful run should
 # be here too, not just the output from errors.
