@@ -9,8 +9,6 @@ sudo apt-get -y install build-essential
 sudo apt-get -y install libxslt1-dev
 sudo apt-get -y install libxml2-dev
 sudo apt-get -y install zlib1g-dev
-git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
-cd playbooks/Bindle
-git checkout 2.0-alpha.4
-cd ../..
+git submodule init
+git submodule update
 
