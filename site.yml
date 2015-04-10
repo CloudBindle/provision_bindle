@@ -1,5 +1,10 @@
 ---
 # setup Bindle
+- hosts: bindle
+  vars:
+    architecture_setup_path: /home/ubuntu/architecture-setup
+  roles: 
+    - { role: bindle-profiles }
 
 - hosts: bindle
   sudo: True
@@ -8,12 +13,6 @@
         user_name: ubuntu,
         bindle_git_branch: master,
         bindle_config: aws.cfg}
-
-- hosts: bindle
-  vars:
-    architecture_setup_path: /home/ubuntu/architecture-setup
-  roles: 
-    - { role: bindle-profiles }
 
 - name: workflow-decider install
   include: workflow-decider/install/site.yml 
