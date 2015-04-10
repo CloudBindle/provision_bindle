@@ -8,28 +8,25 @@
   sudo: True
   service: name=ntp state=started enabled=yes
 
-
-#- name: Create working dir
-#  file: path=/home/{{ user_name }}/architecture2 state=directory owner={{ user_name }} group={{ user_name }}
-
+# These tasks should maybe be done in setup.sh. The Bindle repo needs to be checked out before this gets called.
 - name: Checkout Bindle version {{ bindle_git_branch }}
-  command: git checkout {{ bindle_git_branch }} creates={{ architecture_setup_path }}/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle 
+  shell: creates={{ architecture_setup_path }}/Bindle/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle git checkout {{ bindle_git_branch }} > Bindle_{{ bindle_git_branch }} 2>&1
 
 - name: Checkout workflow-decider version {{ decider_git_branch }}
-  command: git checkout {{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider creates={{ architecture_setup_path }}/decider_{{ decider_git_branch }}
+  shell: creates={{ architecture_setup_path }}/workflow-decider/decider_{{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider git checkout {{ decider_git_branch }} > decider_{{ decider_git_branch }} 2>&1 
 
 - name: Checkout seqware-bag version {{ seqware_bag_git_branch }}
-  command: git checkout {{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag creates={{ architecture_setup_path }}/seqware_bag_{{ seqware_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/seqware-bag/seqware_bag_{{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag git checkout {{ seqware_bag_git_branch }} > seqware_bag_{{ seqware_bag_git_branch }} 2>&1
 
 - name: Checkout monitoring-bag version {{ monitoring_bag_git_branch }}
-  command: git checkout {{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag creates={{ architecture_setup_path }}/monitoring_bag_{{ monitoring_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/monitoring-bag/monitoring_bag_{{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag git checkout {{ monitoring_bag_git_branch }} > monitoring_bag_{{ monitoring_bag_git_branch }} 2>&1
 
 - name: Checkout pancancer-bag version {{ pancancer_bag_git_branch }}
-  command: git checkout {{ pancancer_bag_git_branch }} chdir={{ architecture_setup_path }}/pancancer-bag creates={{ architecture_setup_path }}/pancancer_bag_{{ pancancer_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/pancancer-bag/pancancer_bag_{{ pancancer_bag_git_branch }}  chdir={{ architecture_setup_path }}/pancancer-bag git checkout {{ pancancer_bag_git_branch }} > pancancer_bag_{{ pancancer_bag_git_branch }} 2>&1
 
 - name: get submodule statuses 
   command: chdir={{ architecture_setup_path }}
-         git submodule foreach 'git status'
+         git submodule foreach 'echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) && echo Branch is && git rev-parse --abbrev-ref HEAD'
   register: repo_statuses
 
 - name: display submodule statuses
