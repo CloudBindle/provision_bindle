@@ -17,18 +17,22 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 
 ## Setup
 
-This playbook relies upon bindle's install playbook. 
+**!!! IMPORTANT !!!**
+You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
+
+If you do have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
+
+The simplest way to set up the maching you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
 
     curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
-    
-!!! IMPORTANT !!!    
-You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
-## Running 
+Sometimes, parts of the main playbook may fail. If this happens, you may want to try making any changes (if necessary - if it's simply a download that failed, as often happens with the vagrant plugins, you probably don't need to change anything), and re-running the playbook:
 
-If you wish to setup the host your are currently on as a launcher host, skip directly to the command below. 
+    ansible-playbook -i inventory site.yml
 
-If you wish to setup some other host, you will need to edit your inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host.
+## Setting up a different host as launcher 
+
+If you wish to setup some other host as the launcher, you will need to edit your inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host.
         
     ansible-playbook -i inventory site.yml
 
