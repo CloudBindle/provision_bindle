@@ -20,7 +20,7 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 **!!! IMPORTANT !!!**
 You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
-If you do have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
+If you do not have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
 
 The simplest way to set up the maching you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
 
