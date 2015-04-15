@@ -19,10 +19,7 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 
 This playbook relies upon bindle's install playbook. 
 
-    sudo apt-get install git
-    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
-    cd architecture-setup 
-    bash setup.sh
+    curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
     
 !!! IMPORTANT !!!    
 You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
