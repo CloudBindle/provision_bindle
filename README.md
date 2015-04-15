@@ -28,13 +28,15 @@ The simplest way to set up the maching you are *currently* logged into as a laun
 
 Sometimes, parts of the main playbook may fail. If this happens, you may want to try making any changes (if necessary - if it's simply a download that failed, as often happens with the vagrant plugins, you probably don't need to change anything), and re-running the playbook:
 
+    cd architecture-setup
     ansible-playbook -i inventory site.yml
 
-## Setting up a different host as launcher 
+<!-- ## Setting up a different host as launcher 
 
 If you wish to setup some other host as the launcher, you will need to edit your inventory. Replace the pem file and the ip address of the launcher host that you wish to create with your desired launcher host. Ansible will obviously require SSH, therefore make sure that port 22 is open to your desired launcher host.
         
     ansible-playbook -i inventory site.yml
+-->
 
 Navigate to ~/architecture2 and follow the rest of the pancancer-info instructions on how to setup and use bindle
 
