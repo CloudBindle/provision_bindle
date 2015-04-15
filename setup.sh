@@ -9,6 +9,8 @@ sudo apt-get -y install build-essential
 sudo apt-get -y install libxslt1-dev
 sudo apt-get -y install libxml2-dev
 sudo apt-get -y install zlib1g-dev
+touch ~/.ssh/gnostest.pem
+touch ~/.ssh/gnos.pem
 git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
 cd architecture-setup 
 git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
