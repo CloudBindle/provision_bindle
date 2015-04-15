@@ -5,6 +5,9 @@ This tool is used to install Bindle and all of its dependencies pertaining to th
 This will likely grow to include youxia and all other infrastructure used specifically by pancancer. 
 The result is a host that can be used to create new SeqWare images with pancancer workflows pre-installed.
 
+###Setting up the architecture-setup server
+For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partition.
+
 ###Sets up the following on the desired node(s)
 
 * [Bindle](https://github.com/CloudBindle/Bindle)
