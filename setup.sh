@@ -9,6 +9,7 @@ sudo apt-get -y install build-essential
 sudo apt-get -y install libxslt1-dev
 sudo apt-get -y install libxml2-dev
 sudo apt-get -y install zlib1g-dev
+[[ -d ~/.ssh ]] || mkdir ~/.ssh
 touch ~/.ssh/gnostest.pem
 touch ~/.ssh/gnos.pem
 git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
