@@ -1,9 +1,9 @@
 ---
 # The git repo branches, if you're working in production then use the latest stable tagged version
-bindle_git_branch: "release/2.0.0"
-seqware_bag_git_branch: "release/1.0.0"
-pancancer_bag_git_branch: "release/1.0.0"
+bindle_git_branch: "2.0.0"
+seqware_bag_git_branch: "1.0.0"
+pancancer_bag_git_branch: "1.0.0"
 monitoring_bag_git_branch: "1.0-beta.4"
-decider_git_branch: "release/1.1.7"
+decider_git_branch: "1.1.7"
 workflow_version: "1.0.6"
 user_name: ubuntu
