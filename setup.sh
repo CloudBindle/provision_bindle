@@ -1,10 +1,16 @@
 #!/bin/bash
-
 sudo apt-get -y install git
 sudo add-apt-repository --yes ppa:rquillo/ansible
+sudo add-apt-repository --yes ppa:ansible/ansible
 sudo apt-get update
 sudo apt-get -y install python-software-properties
-sudo apt-get -y install ansible
+
+# Make sure we get Ansible 1.9.*
+ANSIBLE_VERSION=$(apt-cache showpkg ansible | grep "^1\.9[^[:space:]]*" | sed 's/^\(1\.9[^ ]*\) .*$/\1/' | tail -1)
+echo "Using Ansible version: $ANSIBLE_VERSION"
+[ -z "$ANSIBLE_VERSION" ] && echo "Could not detect Ansible 1.9.*, available versions are: " && apt-cache showpkg ansible && exit
+sudo apt-get -y install ansible=$ANSIBLE_VERSION
+
 sudo apt-get -y install build-essential
 sudo apt-get -y install libxslt1-dev
 sudo apt-get -y install libxml2-dev
@@ -16,6 +22,6 @@ git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
 cd architecture-setup 
 git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
 cd playbooks/Bindle
-git checkout 2.0-rc.0
+git checkout 2.0.0
 cd ../..
 ansible-playbook -i inventory site.yml
