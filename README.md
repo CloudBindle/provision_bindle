@@ -20,11 +20,12 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 **!!! IMPORTANT !!!**
 You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
-If you do not have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
+If you do *not* have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
 
-The simplest way to set up the maching you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
+The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
 
-    curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
+    cd ~
+    curl -L https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/2.0.0/setup.sh | bash
 
 Sometimes, parts of the main playbook may fail. If this happens, you may want to try making any changes (if necessary - if it's simply a download that failed, as often happens with the vagrant plugins, you probably don't need to change anything), and re-running the playbook:
 
