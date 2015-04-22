@@ -22,6 +22,6 @@ git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
 cd architecture-setup 
 git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
 cd playbooks/Bindle
-git checkout release/2.0.0
+git checkout 2.0.0
 cd ../..
 ansible-playbook -i inventory site.yml
