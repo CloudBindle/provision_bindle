@@ -12,4 +12,7 @@ sudo apt-get -y install zlib1g-dev
 # Initialize and update submodules, but let the main architecture-setup playbook check out the right version.
 git submodule init
 git submodule update
-
+# Some setup needed for youxia
+mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
+cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
+touch ~/.youxia/config

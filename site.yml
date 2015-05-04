@@ -20,6 +20,11 @@
 - hosts: bindle
   sudo: True
   tasks:
+    - { include: youxia/youxia-setup/site.yml }
+
+- hosts: bindle
+  sudo: True
+  tasks:
   # this seems like the wrong place for this, but not sure what the best place for it is if we cannot redistribute 
   # with the AMI
   - name: Copy over pem key for BWA
