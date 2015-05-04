@@ -8,43 +8,27 @@
   sudo: True
   service: name=ntp state=started enabled=yes
 
+# These tasks should maybe be done in setup.sh. The Bindle repo needs to be checked out before this gets called.
+- name: Checkout Bindle version {{ bindle_git_branch }}
+  shell: creates={{ architecture_setup_path }}/Bindle/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle git checkout {{ bindle_git_branch }} > Bindle_{{ bindle_git_branch }} 2>&1
 
-- name: Create working dir
-  file: path=/home/{{ user_name }}/architecture2 state=directory owner={{ user_name }} group={{ user_name }}
+- name: Checkout workflow-decider version {{ decider_git_branch }}
+  shell: creates={{ architecture_setup_path }}/workflow-decider/decider_{{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider git checkout {{ decider_git_branch }} > decider_{{ decider_git_branch }} 2>&1 
 
-- name: Checkout the Bindle git repo
-  git: repo=https://github.com/CloudBindle/Bindle
-       dest=/home/{{ user_name }}/architecture2/Bindle
-       version={{ bindle_git_branch }}
-       force=no
+- name: Checkout seqware-bag version {{ seqware_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/seqware-bag/seqware_bag_{{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag git checkout {{ seqware_bag_git_branch }} > seqware_bag_{{ seqware_bag_git_branch }} 2>&1
 
-- name: Checkout the Seqware git repo
-  git: repo=https://github.com/SeqWare/seqware-bag.git
-       dest=/home/{{ user_name }}/architecture2/seqware-bag
-       version={{ seqware_bag_git_branch }}
-       force=no
+- name: Checkout monitoring-bag version {{ monitoring_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/monitoring-bag/monitoring_bag_{{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag git checkout {{ monitoring_bag_git_branch }} > monitoring_bag_{{ monitoring_bag_git_branch }} 2>&1
 
-- name: Checkout the pancancer-bag git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
-       dest=/home/{{ user_name }}/architecture2/pancancer-bag
-       version={{ pancancer_bag_git_branch }}
-       force=no
+- name: Checkout pancancer-bag version {{ pancancer_bag_git_branch }}
+  shell: creates={{ architecture_setup_path }}/pancancer-bag/pancancer_bag_{{ pancancer_bag_git_branch }}  chdir={{ architecture_setup_path }}/pancancer-bag git checkout {{ pancancer_bag_git_branch }} > pancancer_bag_{{ pancancer_bag_git_branch }} 2>&1
 
-- name: Checkout the monitoring-bag git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
-       dest=/home/{{ user_name }}/architecture2/monitoring-bag
-       version={{ monitoring_bag_git_branch }}
-       force=no
-       
-- name: Checkout the decider git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git
-       dest=/home/{{ user_name }}/architecture2/workflow-decider
-       version={{ decider_git_branch }}
-       force=no
+- name: get submodule statuses 
+  command: chdir={{ architecture_setup_path }}
+         git submodule foreach 'echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) && echo Branch is && git rev-parse --abbrev-ref HEAD'
+  register: repo_statuses
 
-# TODO: Find a less ugly way to do this... Ideally, the out from a successful run should
-# be here too, not just the output from errors.
-- name: Run decider install from bash
-  shell: chdir=/home/{{ user_name }}/architecture2/workflow-decider/install
-         ansible-playbook -i inventory site.yml
-         creates=/home/{{ user_name }}/architecture2/workflow-decider/install-created
+- name: display submodule statuses
+  debug: var=repo_statuses.stdout_lines
+

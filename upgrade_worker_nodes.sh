@@ -5,7 +5,7 @@ echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
 {
 WORKFLOW_VERSION=$1
 if [ -n "$WORKFLOW_VERSION" ] ; then
-  cd ~/architecture2/pancancer-bag
+  cd ~/architecture-setup/pancancer-bag
   if [ ! -d workflow-update/roles/update_workflow/files ] ; then
     mkdir workflow-update/roles/update_workflow/files
   fi

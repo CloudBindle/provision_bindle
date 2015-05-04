@@ -21,6 +21,17 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
 If you do *not* have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
+<!--
+This playbook relies upon bindle's install playbook. You will need a fairly current version of git (at least version 1.9.1)
+
+    sudo add-apt-repository ppa:git-core/ppa
+    sudo apt-get install git
+    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
+    cd architecture-setup 
+    bash setup.sh
+-->
+!!! IMPORTANT !!!    
+You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
 The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
 
@@ -38,6 +49,7 @@ If you wish to setup some other host as the launcher, you will need to edit your
         
     ansible-playbook -i inventory site.yml
 -->
+
 
 Navigate to ~/architecture2 and follow the rest of the pancancer-info instructions on how to setup and use bindle
 
@@ -96,6 +108,8 @@ This script will checkout a specific version of architecture-setup. It will upda
 Example:
 
     upgrade_architecture_setup.sh -v 1.0.5
+    
+The file `roles/bindle-profiles/vars/main.yml` that is a part of architecture-setup 1.0.5 will be downloaded to the current local repository. Ansible will then be run (`sudo ansible-playbook -i inventory site.yml`).
 
 **NOTE:** This script will update *local* repositories and bindle configuration files. It may warn you if you have changes to files tracked in github, but you may want to make backup copies of any bindle config files (`~/.bindle/*.cfg`), and any important changes you need in `~/architectures2/Bindle`, `~/architectures2/panancer-bag`, `~/architectures2/monitoring-bag`, , `~/architectures2/seqware-bag`, or `~/architectures2/workflow-decider`.
 

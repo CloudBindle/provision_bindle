@@ -1,7 +1,9 @@
 #!/bin/bash
+
 sudo apt-get -y install git
 sudo add-apt-repository --yes ppa:rquillo/ansible
 sudo add-apt-repository --yes ppa:ansible/ansible
+sudo add-apt-repository --yes ppa:git-core/ppa
 sudo apt-get update
 sudo apt-get -y install python-software-properties
 
@@ -20,8 +22,10 @@ touch ~/.ssh/gnostest.pem
 touch ~/.ssh/gnos.pem
 git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
 cd architecture-setup 
-git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle
-cd playbooks/Bindle
-git checkout 2.0.0
-cd ../..
-ansible-playbook -i inventory site.yml
+# Initialize and update submodules, but let the main architecture-setup playbook check out the right version.
+git submodule init
+git submodule update
+# Some setup needed for youxia
+mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
+cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
+touch ~/.youxia/config
