@@ -17,10 +17,10 @@
 - name: workflow-decider install
   include: workflow-decider/install/site.yml 
 
-- hosts: bindle
-  sudo: True
-  tasks:
-    - { include: youxia/youxia-setup/site.yml }
+#- hosts: bindle
+#  sudo: True
+#  tasks:
+#    - { include: youxia/youxia-setup/site.yml }
 
 - hosts: bindle
   sudo: True

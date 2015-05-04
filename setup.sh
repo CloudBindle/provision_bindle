@@ -29,3 +29,5 @@ git submodule update
 mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
 cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
 touch ~/.youxia/config
+ansible-playbook -i inventory site.yml
+
