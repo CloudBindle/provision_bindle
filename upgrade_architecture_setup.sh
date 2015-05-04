@@ -85,10 +85,16 @@ if [[ "$CHECKOUT_MESSAGE" =~ .*error.* ]] ; then
 # ...Otherwise, run the ansible playbook.
 else
   echo $CHECKOUT_MESSAGE
+  # Update all of the Bindle config files, based on the workflow version in main.yml that has just been checked out.
+  WORKFLOW_VERSION=$(cat ~/architecture-setup/roles/bindle-profiles/vars/main.yml | grep workflow_version | sed 's/.*\"\(.*\)\".*/\1/g')
+  echo "Updating bindle config files with new workflow version: $WORKFLOW_VERSION"
+  sed -i 's/\(Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\(.*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/.bindle/*.cfg
+
   echo "Running architecture-setup with updated dependencies..."
   export PYTHONUNBUFFERED=1
   ansible-playbook -i inventory site.yml
 fi
+
 } | tee -a $LOG_FILE
 # because the script executes inside "{...} | tee", we need to capture the exit code
 # before writing the last line of th log file, and then return THAT exit code.

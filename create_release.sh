@@ -44,8 +44,8 @@ process_curl_status()
 increment_version()
 {
   local version="$1"
-  local prefix=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\1/')
-  local last_digit=$(echo $version | sed 's/\(.*\)\.\([[:digit:]]\)\+/\2/')
+  local prefix=$(echo $version | sed 's/\(.*\)\.\([^.]*\)/\1/')
+  local last_digit=$(echo $version | sed 's/\(.*\)\.\([^.]*\)/\2/')
   if [ -n "$last_digit" ] ; then
     last_digit=$(($last_digit+1))
   else
@@ -116,10 +116,10 @@ else
   read -r user_response
   if [ "$user_response" == "n" ] ; then
     echo "Reverting back to test mode."
-    TEST_MODE="false"
+    TEST_MODE="true"
   elif [ "$user_response" == "y" ] ; then
     echo "User has confirmed: TEST_MODE is off. Repositories will be updated."
-    TEST_MODE="true"
+    TEST_MODE="false"
   else
     echo "Aborting: Invalid response: $user_response"
     exit
@@ -189,13 +189,13 @@ FILECONTENTS=$(cat ./roles/bindle-profiles/vars/main.yml)
 printf "Updated ./roles/bindle-profiles/vars/main.yml is:\n$FILECONTENTS\n"
 
 # Update main.yml in repo
-OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml?ref=feature/upgrade_launcher_script --dump-header header.txt)
+OLD_HASH_RESULT=$(curl -s -u `cat github.token`:x-oauth-basic https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt)
 process_curl_status "$OLD_HASH_RESULT"
 OLD_HASH=$( echo "$OLD_HASH_RESULT" | grep \"sha\" | sed 's/ *\"sha\": \"\([^ ]*\)\",/\1/g')
 ENCODED_FILE=$(base64 roles/bindle-profiles/vars/main.yml | tr -d "\n")
 if [ "$TEST_MODE" == "false" ] ; then
   echo "Submitting updated main.yml architecture-setup"
-  COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'","branch":"feature/upgrade_launcher_script"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
+  COMMIT_RESULT=$(curl -XPUT -s -u `cat github.token`:x-oauth-basic -H "Content-Type: application/json" -d '{"path":"main.yml","message":"Updated with new dependencies","content":"'$ENCODED_FILE'","sha":"'$OLD_HASH'"}' https://api.github.com/repos/ICGC-TCGA-PanCancer/architecture-setup/contents/roles/bindle-profiles/vars/main.yml --dump-header header.txt )
   process_curl_status "$COMMIT_RESULT"
 fi
 
