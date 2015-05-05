@@ -6,7 +6,7 @@
 # 3) Checkout out the repo on the build machine and copying local files into the docker container
 
 LAUNCHER_VERSION=$1
-
+REF=$2
 BUILD_DATE=$(date +"%y-%m-%d %H:%M:%S")
 
 read -r -d '' COMMON<<'STARTBLOCK'
@@ -50,8 +50,10 @@ SCRIPTBLOCK
 read -r -d '' BUILD_FROM_CHECKOUT <<'CHECKOUTBLOCK'
 RUN git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git && \
     cd architecture-setup && \
-    git checkout 2.0.0 &&
-    git submodule init && git submodule update
+    git checkout GIT_REF && \
+    git submodule init && git submodule update && \ 
+    cd youxia/youxia-setup &&
+    ansible-playbook -i inventory site.yml
 CHECKOUTBLOCK
 
 read -r -d '' BUILD_FROM_LOCAL_SOURCE <<'LOCALSRCBLOCK'
@@ -72,6 +74,7 @@ DOCKERFILE="$COMMON\n$BUILD_FROM_SCRIPT\n$END"
 echo -e "$DOCKERFILE" > Dockerfile.script.tmp
 
 DOCKERFILE="$COMMON\n$BUILD_FROM_CHECKOUT\n$END"
+DOCKERFILE=${DOCKERFILE//GIT_REF/"$REF"}
 echo -e "$DOCKERFILE" > Dockerfile.checkoutincontainer.tmp
 
 DOCKERFILE="$COMMON\n$BUILD_FROM_LOCAL_SOURCE\n$END"
