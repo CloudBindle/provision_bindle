@@ -120,7 +120,8 @@ fi
 
 if [  -n "$WORKFLOW_VERSION" ] ; then
   # update the vars file for George's workflow-update playbook so that it will download a new version of the workflow.
-  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture-setup/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
+  SEQWARE_VERSION=SeqWare_1.1.0
+  sed -i -e 's/\(workflows: Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\([^_]*\)\(_'$SEQWARE_VERSION'\)/\1'$WORKFLOW_VERSION'\3/g' ~/architecture-setup/pancancer-bag/workflow-update/roles/update_workflow/vars/main.yml
   update_file_in_repo "main.yml" "workflow-update/roles/update_workflow/vars" "pancancer-bag" "architecture-setup"
 
   # monitoring-bag also contains a reference to the workflow version so it also needs to be updated.
