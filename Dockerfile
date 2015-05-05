@@ -1,7 +1,8 @@
 # Based on Ubuntu 14
 FROM ubuntu:14.04
-
 MAINTAINER Solomon Shorser <solomon.shorser@oicr.on.ca>
+LABEL architecture-setup=3.0.0
+
 # some packages needed by the other bags needed packages in "precise" but not in "trusty". Specifically, libdb4.8 was needed.
 RUN apt-get install -y software-properties-common && \
     add-apt-repository "deb http://ca.archive.ubuntu.com/ubuntu precise main" && \
@@ -26,15 +27,17 @@ WORKDIR /home/ubuntu
 # RUN curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
 RUN mkdir ~/.ssh && touch ~/.ssh/gnostest.pem && \
     touch ~/.ssh/gnos.pem
-RUN git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git && \
-    cd architecture-setup && \
-    git checkout 2.0.0 && \
-    git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle && \
-    cd playbooks/Bindle && \
-    git checkout 2.0.0 
+
+ENV PYTHONUNBUFFERED 1
+RUN curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
+#RUN git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git && \
+#    cd architecture-setup && \
+#    git checkout 2.0.0 && \
+#    git clone https://github.com/CloudBindle/Bindle.git playbooks/Bindle && \
+#    cd playbooks/Bindle && \
+#    git checkout 2.0.0 
 
 WORKDIR /home/ubuntu/architecture-setup
 # This is so we can see the ansible output as the playbook is running, rather than wait until after it completes.
-ENV PYTHONUNBUFFERED 1
-RUN ansible-playbook -i inventory site.yml
+#RUN ansible-playbook -i inventory site.yml
     
