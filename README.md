@@ -33,10 +33,14 @@ This playbook relies upon bindle's install playbook. You will need a fairly curr
 !!! IMPORTANT !!!    
 You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
-The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
+The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single step, like this:
 
     cd ~
     curl -L https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/2.0.0/setup.sh | bash
+
+The above command will download and execute the setup script for architecture-setup version 2.0.0. If you want to install architecture-setup based on the current develop branch, use this command instead:
+
+    curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
 
 Sometimes, parts of the main playbook may fail. If this happens, you may want to try making any changes (if necessary - if it's simply a download that failed, as often happens with the vagrant plugins, you probably don't need to change anything), and re-running the playbook:
 
