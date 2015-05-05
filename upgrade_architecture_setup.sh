@@ -88,7 +88,8 @@ else
   # Update all of the Bindle config files, based on the workflow version in main.yml that has just been checked out.
   WORKFLOW_VERSION=$(cat ~/architecture-setup/roles/bindle-profiles/vars/main.yml | grep workflow_version | sed 's/.*\"\(.*\)\".*/\1/g')
   echo "Updating bindle config files with new workflow version: $WORKFLOW_VERSION"
-  sed -i 's/\(Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\(.*\)\(_SeqWare_1.1.0-alpha.5\)/\1'$WORKFLOW_VERSION'\3/g' ~/.bindle/*.cfg
+  SEQWARE_VERSION=SeqWare_1.1.0
+  sed -i 's/\(Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_\)\(.*\)\(_'$SEQWARE_VERSION'\)/\1'$WORKFLOW_VERSION'\3/g' ~/.bindle/*.cfg
 
   echo "Running architecture-setup with updated dependencies..."
   export PYTHONUNBUFFERED=1
