@@ -25,9 +25,13 @@ cd architecture-setup
 # Initialize and update submodules, but let the main architecture-setup playbook check out the right version.
 git submodule init
 git submodule update
+ansible-playbook -i inventory site.yml
 # Some setup needed for youxia
-mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
-cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
-touch ~/.youxia/config
+#mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
+#cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
+#touch ~/.youxia/config
+cd youxia/youxia-setup
+ansible-playbook -i inventory site.yml
+cd ../ansible-sensu
 ansible-playbook -i inventory site.yml
 
