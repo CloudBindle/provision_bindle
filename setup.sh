@@ -21,7 +21,8 @@ sudo apt-get -y install zlib1g-dev
 touch ~/.ssh/gnostest.pem
 touch ~/.ssh/gnos.pem
 git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
-cd architecture-setup 
+cd architecture-setup
+git checkout feature/architecture-setup-3
 # Initialize and update submodules, but let the main architecture-setup playbook check out the right version.
 git submodule init
 git submodule update
