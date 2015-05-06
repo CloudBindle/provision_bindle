@@ -33,6 +33,6 @@ ansible-playbook -i inventory site.yml
 #touch ~/.youxia/config
 cd youxia/youxia-setup
 ansible-playbook -i inventory site.yml
-cd ../ansible-sensu
+cd ../ansible_sensu
 ansible-playbook -i inventory site.yml
 
