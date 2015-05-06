@@ -1,12 +1,18 @@
 ---
+# If installing into a docker container, you don't need NTP you can link to the host machine's /etc/localtime
+- name: Check if we're in a docker container
+  stat: path=/.dockerinit
+  register: dockerinit_stat
 
 - name: Install NTP
   sudo: True
   apt: name=ntp state=latest
+  when: not dockerinit_stat.stat.exists
 
 - name: Start NTP on boot
   sudo: True
   service: name=ntp state=started enabled=yes
+  when: not dockerinit_stat.stat.exists
 
 # These tasks should maybe be done in setup.sh. The Bindle repo needs to be checked out before this gets called.
 - name: Checkout Bindle version {{ bindle_git_branch }}
@@ -26,7 +32,7 @@
 
 - name: get submodule statuses 
   command: chdir={{ architecture_setup_path }}
-         git submodule foreach 'echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) && echo Branch is && git rev-parse --abbrev-ref HEAD'
+         git submodule foreach 'echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) && echo Branch is && git branch | grep \* && git rev-parse --abbrev-ref HEAD'
   register: repo_statuses
 
 - name: display submodule statuses
