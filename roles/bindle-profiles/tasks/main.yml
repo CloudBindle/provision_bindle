@@ -32,7 +32,7 @@
 
 - name: get submodule statuses 
   command: chdir={{ architecture_setup_path }}
-         git submodule foreach 'echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) && echo Branch is && git branch | grep \* && git rev-parse --abbrev-ref HEAD'
+    git submodule foreach 'git branch | grep \* ; echo Branch is && git rev-parse --abbrev-ref HEAD ;  echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) '
   register: repo_statuses
 
 - name: display submodule statuses
