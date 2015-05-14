@@ -25,7 +25,7 @@
   command: rabbitmq-plugins enable rabbitmq_management
 
 - name: Start RabbitMQ Service
-  service: name=rabbitmq-server state=started  
+  service: name=rabbitmq-server state=started upate_cache=yes 
 
 - name: Install RabbitMQ CLI Admin
   sudo: true
