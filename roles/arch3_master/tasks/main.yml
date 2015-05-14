@@ -104,7 +104,7 @@
 
 - name: make a db user
   sudo_user: postgres
-  postgresql_user: user=queue password=queue role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE,INHERIT,LOGIN
+  postgresql_user: user=queue_user password=queue role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE,INHERIT,LOGIN
 
 - name: make a db
   sudo_user: postgres
