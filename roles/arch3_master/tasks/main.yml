@@ -15,6 +15,9 @@
   sudo: true
   command: rabbitmq-plugins enable rabbitmq_management
 
+- name: Start RabbitMQ Service
+  service: name=rabbitmq-server state=started  
+
 - name: Install RabbitMQ CLI Admin
   sudo: true
   shell: wget -O - -q http://localhost:15672/cli/rabbitmqadmin > /usr/local/sbin/rabbitmqadmin
