@@ -1,0 +1,5 @@
+---
+max_running_containers: 1
+max_seconds_before_lost: 100
+check_previous_job_has: false
+results_file: results.txt
