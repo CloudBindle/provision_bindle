@@ -18,14 +18,14 @@
   apt_key: url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc state=present
 
 - name: Install RabbitMQ
-  apt: name=rabbitmq-server
+  apt: name=rabbitmq-server upate_cache=yes force=yes
 
 - name: Enable RabbitMQ Admin
   sudo: true
   command: rabbitmq-plugins enable rabbitmq_management
 
 - name: Start RabbitMQ Service
-  service: name=rabbitmq-server state=started upate_cache=yes 
+  service: name=rabbitmq-server state=started 
 
 - name: Install RabbitMQ CLI Admin
   sudo: true
