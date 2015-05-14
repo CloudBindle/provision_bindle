@@ -1,5 +1,8 @@
 ---
 
+- name: Install wget
+  apt: name=wget
+
 - name: Create arch3 dir
   file: name=/home/ubuntu/{{ item }} state=directory
   with_items:
