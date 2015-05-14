@@ -1,4 +1,13 @@
 ---
+
+- name: Create arch3 dir
+  file: name=/home/ubuntu/{{ item }} state=directory
+  with_items:
+    - arch3
+    - arch3/dbsetup
+    - arch3/bin
+    - arch3/config
+
 #######################
 # RabbitMQ
 #######################
@@ -92,7 +101,7 @@
 
 - name: make a db user
   sudo_user: postgres
-  postgresql_user: user=queue_user password=queue role_attr_flags=CREATEDB,NOSUPERUSER,SUPERUSER,CREATEROLE,INHERIT,LOGIN
+  postgresql_user: user=queue password=queue role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE,INHERIT,LOGIN
 
 - name: make a db
   sudo_user: postgres
@@ -107,7 +116,9 @@
   get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/develop/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
 
 - name: Run DB schema script
-  command: psql -h 127.0.0.1 -U queue_user -W queue_status < /home/ubuntu/arch3/dbsetup/schema.sql
+  command: psql -h 127.0.0.1 -U queue_user -w queue_status < /home/ubuntu/arch3/dbsetup/schema.sql
+  environment:
+    PGPASSWORD: queue
 
 
 #######################

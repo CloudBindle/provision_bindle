@@ -37,5 +37,5 @@
 - hosts: bindle
   sudo: True
   roles:
-  - { role: arch3_master } 
+  - { role: arch3_master , tags: ['arch3_master'] } 
 
