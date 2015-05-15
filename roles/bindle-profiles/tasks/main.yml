@@ -33,15 +33,19 @@
 #- name: Checkout youxia version 
 #  shell: creates={{ architecture_setup_path }}/youxia/youxia_{{ youxia_git_branch }}  chdir={{ architecture_setup_path }}/youxia git checkout {{ youxia_git_branch }} > youxia_bag_{{ youxia_git_branch }} 2>&1
 
-- name: checkout submodules
-  command: chdir={{ architecture_setup_path }}
-    git submodule init && git submodule update --remote
+- name: Initialize submodules
+  shell: chdir={{ architecture_setup_path }}
+    git submodule init
 
-- name: get submodule statuses 
+- name: Update submodules
+  shell: chdir={{ architecture_setup_path }}
+    git submodule update
+
+- name: Get submodule statuses 
   command: chdir={{ architecture_setup_path }}
     git submodule foreach 'git branch | grep \* ; echo Branch is && git rev-parse --abbrev-ref HEAD ;  echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) '
   register: repo_statuses
 
-- name: display submodule statuses
+- name: Display submodule statuses
   debug: var=repo_statuses.stdout_lines
 
