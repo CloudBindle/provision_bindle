@@ -14,25 +14,6 @@
   service: name=ntp state=started enabled=yes
   when: not dockerinit_stat.stat.exists
 
-# These tasks should maybe be done in setup.sh. The Bindle repo needs to be checked out before this gets called.
-#- name: Checkout Bindle
-#  shell: creates={{ architecture_setup_path }}/Bindle/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle git checkout {{ bindle_git_branch }} > Bindle_{{ bindle_git_branch }} 2>&1
-
-#- name: Checkout workflow-decider
-#  shell: creates={{ architecture_setup_path }}/workflow-decider/decider_{{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider git checkout {{ decider_git_branch }} > decider_{{ decider_git_branch }} 2>&1 
-
-#- name: Checkout seqware-bag version 
-#  shell: creates={{ architecture_setup_path }}/seqware-bag/seqware_bag_{{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag git checkout {{ seqware_bag_git_branch }} > seqware_bag_{{ seqware_bag_git_branch }} 2>&1
-
-#- name: Checkout monitoring-bag version 
-#  shell: creates={{ architecture_setup_path }}/monitoring-bag/monitoring_bag_{{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag git checkout {{ monitoring_bag_git_branch }} > monitoring_bag_{{ monitoring_bag_git_branch }} 2>&1
-
-#- name: Checkout pancancer-bag version 
-#  shell: creates={{ architecture_setup_path }}/pancancer-bag/pancancer_bag_{{ pancancer_bag_git_branch }}  chdir={{ architecture_setup_path }}/pancancer-bag git checkout {{ pancancer_bag_git_branch }} > pancancer_bag_{{ pancancer_bag_git_branch }} 2>&1
-
-#- name: Checkout youxia version 
-#  shell: creates={{ architecture_setup_path }}/youxia/youxia_{{ youxia_git_branch }}  chdir={{ architecture_setup_path }}/youxia git checkout {{ youxia_git_branch }} > youxia_bag_{{ youxia_git_branch }} 2>&1
-
 - name: Initialize submodules
   shell: chdir={{ architecture_setup_path }}
     git submodule init
@@ -43,9 +24,12 @@
 
 - name: Get submodule statuses 
   command: chdir={{ architecture_setup_path }}
-    git submodule foreach 'git branch | grep \* ; echo Branch is && git rev-parse --abbrev-ref HEAD ;  echo Tag is && git name-rev --tags --name-only $(git rev-parse HEAD) '
+    git submodule foreach 'echo What is checked out? ; git describe --all'
   register: repo_statuses
 
 - name: Display submodule statuses
   debug: var=repo_statuses.stdout_lines
+
+- name: Copy over bash profile
+  copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc
 
