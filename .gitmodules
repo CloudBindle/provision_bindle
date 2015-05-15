@@ -13,3 +13,6 @@
 [submodule "seqware-bag"]
 	path = seqware-bag
 	url = https://github.com/SeqWare/seqware-bag.git
+[submodule "youxia"]
+	path = youxia
+	url = https://github.com/CloudBindle/youxia.git
