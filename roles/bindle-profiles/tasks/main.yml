@@ -15,20 +15,27 @@
   when: not dockerinit_stat.stat.exists
 
 # These tasks should maybe be done in setup.sh. The Bindle repo needs to be checked out before this gets called.
-- name: Checkout Bindle version {{ bindle_git_branch }}
-  shell: creates={{ architecture_setup_path }}/Bindle/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle git checkout {{ bindle_git_branch }} > Bindle_{{ bindle_git_branch }} 2>&1
+#- name: Checkout Bindle
+#  shell: creates={{ architecture_setup_path }}/Bindle/Bindle_{{ bindle_git_branch }} chdir={{ architecture_setup_path }}/Bindle git checkout {{ bindle_git_branch }} > Bindle_{{ bindle_git_branch }} 2>&1
 
-- name: Checkout workflow-decider version {{ decider_git_branch }}
-  shell: creates={{ architecture_setup_path }}/workflow-decider/decider_{{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider git checkout {{ decider_git_branch }} > decider_{{ decider_git_branch }} 2>&1 
+#- name: Checkout workflow-decider
+#  shell: creates={{ architecture_setup_path }}/workflow-decider/decider_{{ decider_git_branch }} chdir={{ architecture_setup_path }}/workflow-decider git checkout {{ decider_git_branch }} > decider_{{ decider_git_branch }} 2>&1 
 
-- name: Checkout seqware-bag version {{ seqware_bag_git_branch }}
-  shell: creates={{ architecture_setup_path }}/seqware-bag/seqware_bag_{{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag git checkout {{ seqware_bag_git_branch }} > seqware_bag_{{ seqware_bag_git_branch }} 2>&1
+#- name: Checkout seqware-bag version 
+#  shell: creates={{ architecture_setup_path }}/seqware-bag/seqware_bag_{{ seqware_bag_git_branch }} chdir={{ architecture_setup_path }}/seqware-bag git checkout {{ seqware_bag_git_branch }} > seqware_bag_{{ seqware_bag_git_branch }} 2>&1
 
-- name: Checkout monitoring-bag version {{ monitoring_bag_git_branch }}
-  shell: creates={{ architecture_setup_path }}/monitoring-bag/monitoring_bag_{{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag git checkout {{ monitoring_bag_git_branch }} > monitoring_bag_{{ monitoring_bag_git_branch }} 2>&1
+#- name: Checkout monitoring-bag version 
+#  shell: creates={{ architecture_setup_path }}/monitoring-bag/monitoring_bag_{{ monitoring_bag_git_branch }} chdir={{ architecture_setup_path }}/monitoring-bag git checkout {{ monitoring_bag_git_branch }} > monitoring_bag_{{ monitoring_bag_git_branch }} 2>&1
 
-- name: Checkout pancancer-bag version {{ pancancer_bag_git_branch }}
-  shell: creates={{ architecture_setup_path }}/pancancer-bag/pancancer_bag_{{ pancancer_bag_git_branch }}  chdir={{ architecture_setup_path }}/pancancer-bag git checkout {{ pancancer_bag_git_branch }} > pancancer_bag_{{ pancancer_bag_git_branch }} 2>&1
+#- name: Checkout pancancer-bag version 
+#  shell: creates={{ architecture_setup_path }}/pancancer-bag/pancancer_bag_{{ pancancer_bag_git_branch }}  chdir={{ architecture_setup_path }}/pancancer-bag git checkout {{ pancancer_bag_git_branch }} > pancancer_bag_{{ pancancer_bag_git_branch }} 2>&1
+
+#- name: Checkout youxia version 
+#  shell: creates={{ architecture_setup_path }}/youxia/youxia_{{ youxia_git_branch }}  chdir={{ architecture_setup_path }}/youxia git checkout {{ youxia_git_branch }} > youxia_bag_{{ youxia_git_branch }} 2>&1
+
+- name: checkout submodules
+  command: chdir={{ architecture_setup_path }}
+    git submodule init && git submodule update --remote
 
 - name: get submodule statuses 
   command: chdir={{ architecture_setup_path }}
