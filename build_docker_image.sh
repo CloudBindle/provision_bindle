@@ -23,7 +23,7 @@ RUN apt-get install -y software-properties-common && \
     add-apt-repository --yes ppa:ansible/ansible && \
     apt-get update
 
-RUN apt-get install -y python-apt mcrypt git ansible vim curl build-essential libxslt1-dev libxml2-dev zlib1g-dev
+RUN apt-get install -y python-apt mcrypt git ansible vim curl build-essential libxslt1-dev libxml2-dev zlib1g-dev wget
 
 # Create ubuntu user and group, make the account passwordless
 RUN groupadd ubuntu && \
@@ -45,13 +45,13 @@ ENV PYTHONUNBUFFERED 1
 STARTBLOCK
 
 read -r -d '' BUILD_FROM_SCRIPT <<'SCRIPTBLOCK'
-FROM seqware/launcher_base:BASE_VERSION
+FROM pancancer/launcher_base:BASE_VERSION
 RUN curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/GIT_REF/setup.sh | bash
 WORKDIR /home/ubuntu/architecture-setup
 SCRIPTBLOCK
 
 read -r -d '' BUILD_FROM_CHECKOUT <<'CHECKOUTBLOCK'
-FROM seqware/launcher_base:BASE_VERSION
+FROM pancancer/launcher_base:BASE_VERSION
 RUN git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git && \
     cd architecture-setup && \
     git checkout GIT_REF && \
@@ -65,7 +65,7 @@ RUN cd youxia/ansible_sensu && \
 CHECKOUTBLOCK
 
 read -r -d '' BUILD_FROM_LOCAL_SOURCE <<'LOCALSRCBLOCK'
-FROM seqware/launcher_base:BASE_VERSION
+FROM pancancer/launcher_base:BASE_VERSION
 # This assumes you will run the docker build command from your local architecture-setup directory
 ADD . /home/ubuntu/architecture-setup
 WORKDIR /home/ubuntu/architecture-setup
@@ -105,7 +105,7 @@ echo -e "$DOCKERFILE" > launcher_rest/Dockerfile.localsrc.tmp
 
 #docker build -t seqware/launcher:"$LAUNCHER_VERSION" .
 echo "If you wish to build the base image, do this: "
-echo "$ cd launcher_base ; docker build -t seqware/launcher_base:$LAUNCHER_VERSION ."
+echo "$ cd launcher_base ; docker build -t pancancer/launcher_base:$LAUNCHER_VERSION ."
 echo ""
 echo "Once you have a base image, copy the file you wish to use to build the docker image from \"launcher_rest\" to this directory and then run it."
 echo "Example:"
