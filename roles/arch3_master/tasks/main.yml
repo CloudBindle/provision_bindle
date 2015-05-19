@@ -20,8 +20,12 @@
 - name: Add RabbitMQ key
   apt_key: url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc state=present
 
-- name: Copy over rabbitmq.conf.d
-  copy: src=rabbitmq.conf.d dest=/etc/rabbitmq/rabbitmq.conf.d
+- name: Create rabbitmq.conf.d
+  file: name=/etc/rabbitmq/rabbitmq.conf.d state=directory
+
+- name: Copy over hostname.conf
+  sudo: true
+  copy: src=hostname.conf dest=/etc/rabbitmq/rabbitmq.conf.d/hostname.conf
 
 - name: Install RabbitMQ
   apt: name=rabbitmq-server update_cache=yes force=yes
@@ -31,6 +35,7 @@
   command: rabbitmq-plugins enable rabbitmq_management
 
 - name: Start RabbitMQ Service
+  sudo: true
   service: name=rabbitmq-server state=started 
 
 - name: Install RabbitMQ CLI Admin
