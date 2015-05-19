@@ -4,7 +4,7 @@
   apt: name=wget
 
 - name: Create arch3 dir
-  file: name=/home/ubuntu/{{ item }} state=directory
+  file: name=/home/ubuntu/{{ item }} state=directory owner=ubuntu 
   with_items:
     - arch3
     - arch3/dbsetup
@@ -19,6 +19,9 @@
 
 - name: Add RabbitMQ key
   apt_key: url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc state=present
+
+- name: Copy over rabbitmq.conf.d
+  copy: src=rabbitmq.conf.d dest=/etc/rabbitmq/rabbitmq.conf.d
 
 - name: Install RabbitMQ
   apt: name=rabbitmq-server update_cache=yes force=yes
