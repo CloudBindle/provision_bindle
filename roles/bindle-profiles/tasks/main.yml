@@ -31,5 +31,8 @@
   debug: var=repo_statuses.stdout_lines
 
 - name: Copy over bash profile
-  copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc
+  copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc owner=ubuntu
+
+- name: Copy over service startup script
+  copy: src=roles/bindle-profiles/files/start_services_in_container.sh dest=/home/ubuntu/start_services_in_container.sh owner=ubuntu
 
