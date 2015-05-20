@@ -2,7 +2,8 @@
 
 PEM_KEY=$1
 IMAGE_VERSION=$2
-
+#TODO: Need a generic solution that will also work for OpenStack
+AWS_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 # Create a folder that will be mounted into the docker container
 [[ -d ~/ssh_for_docker ]] || mkdir ~/ssh_for_docker
 # Copy the pem file in $1 to the folder for the container.
@@ -12,11 +13,13 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -v /home/$USER/ssh_for_docker:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
         -v /etc/localtime:/etc/localtime:ro \
-        -p 5672:5672 \
-        -p 4567:4657 \
-        -p 8080:8080 \
         -p 15672:15672 \
+        -p 5672:5672 \
+        -p 4567:4567 \
+        -p 8080:8080 \
+        -e "PUBLIC_IP_ADDRESS=$AWS_IP_ADDRESS" \
         pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash
 # Once you are inside the container, you must copy /opt/ssh/$PEM_KEY to /home/ubuntu/.ssh and run "chmod og-r $PEM_KEY". Also,
 # be sure to copy your aws config files for youxia. Then it's business as usual, for a Launcher node.
+
 
