@@ -17,30 +17,6 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 
 ## Setup
 
-**Running the launcher out of a docker container**
-
-You will need to build the image:
-<!-- Well, for now. Once we get this thing into dockerhub, they can just do docker pull -->
-    sudo docker build -t seqware/launcher .
-    
-Once this has built, you can start up a container using the `launch_docker.sh` script:
-
-    bash launch_docker.sh /home/myusername/.ssh/mypem.pem
-    
-This script will copy the specified pem key to a directory that the launcher will have access to. It will use this key to launch your worker nodes.
-
-Once the container is launched, you can attach your shell to it like this:
-
-    sudo docker attach launcher
-    
-Inside the container, you need to copy the shared pem key to your local `~.ssh` directory, and set the permissions on it appropriately:
-
-    cp /opt/ssh/mypem.pem ~/.ssh/mypem.pem
-    chmod og-r mypem.pem
-<!-- the above process needs to be streamlined: copying the key and setting permissions could be done in another script that is loaded into the docker image. That can wait until Monday. -->
-
-Once this is done, you should be able to launch new worker nodes just as before. Have fun!
-
 **!!! IMPORTANT !!!**
 You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
