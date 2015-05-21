@@ -18,4 +18,7 @@ sudo service redis-server start
 sudo service sensu-server start
 sudo service sensu-api start
 sudo service postgresql start
+# Copy pem keys and other config files from the host.
+echo "Copying $PATH_TO_PEM to ~/.ssh/"
+cp $PATH_TO_PEM ~/.ssh/
 
