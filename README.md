@@ -1,12 +1,11 @@
 architecture-setup
 ================
 
-This tool is used to install Bindle and all of its dependencies pertaining to the pancancer project. 
-This will likely grow to include youxia and all other infrastructure used specifically by pancancer. 
+This tool is used to install Bindle and all of its dependencies pertaining to the pancancer project.
 The result is a host that can be used to create new SeqWare images with pancancer workflows pre-installed.
 
 ###Setting up the architecture-setup server
-For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partition.
+For AWS, use an m3.large, with Ubuntu 14.04. You will need an 8 GB root partition.
 
 ###Sets up the following on the desired node(s)
 
@@ -14,6 +13,8 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 * [Seqware-bag](https://github.com/SeqWare/seqware-bag.git)
 * [Pancancer-bag](https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git)
 * [Monitoring-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
+* [workflow-decider] (https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git)
+* [youxia] (https://github.com/CloudBindle/youxia)
 
 ## Setup
 
