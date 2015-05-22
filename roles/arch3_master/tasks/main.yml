@@ -137,7 +137,7 @@
 #######################
 
 - name: Get Architecture3 jar file
-  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/simple/seqware-snapshot/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_jar }} dest=/home/ubuntu/arch3/bin/pancancer-arch-3-1.0.0-SNAPSHOT.jar
+  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_jar }} dest=/home/ubuntu/arch3/bin/pancancer-arch-3-1.0.0.jar
 
 - name: Template masterConfig
   template: src=../templates/masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json
