@@ -16,3 +16,6 @@
 [submodule "youxia"]
 	path = youxia
 	url = https://github.com/CloudBindle/youxia.git
+[submodule "container-host-bag"]
+	path = container-host-bag
+	url = https://github.com/ICGC-TCGA-PanCancer/container-host-bag.git
