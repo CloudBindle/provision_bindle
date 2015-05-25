@@ -8,7 +8,8 @@ if [ -z $HOST_ENV ] ; then
 fi
 
 #TODO: Need a generic solution that will also work for OpenStack, localhost, etc...
-if [ $HOST_ENV == "AWS" ] ; then 
+if [ $HOST_ENV == "AWS" ] ; then
+  echo "Querying AWS for public IP address of this machine..."
   IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
 else
 #if [ -z $IP_ADDRESS] ; then
@@ -16,12 +17,14 @@ else
 fi
 # Create a folder that will be mounted into the docker container
 [[ -d ~/ssh_for_docker ]] || mkdir ~/ssh_for_docker
+# Create a config folder if there isn't one already.
+[[ -d ~/pancancer_launcher_config ]] || mkdir ~/pancancer_launcher_config
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f ~/ssh_for_docker/$PEM_KEY_BASENAME ]] || cp $PEM_KEY ~/ssh_for_docker/$PEM_KEY_BASENAME
 # After running this command, you will have to run "sudo docker attach launcher" to get into the container.
 docker run -i -t -P --privileged=true --name pancancer_launcher \
-        -v /home/$USER/for_pancancer_launcher_container:/opt/from_host/misc:ro \
+        -v /home/$USER/pancancer_launcher_config:/opt/from_host/config:ro \
         -v /home/$USER/ssh_for_docker:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
         -v /etc/localtime:/etc/localtime:ro \
