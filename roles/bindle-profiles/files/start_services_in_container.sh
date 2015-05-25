@@ -25,3 +25,6 @@ cp $PATH_TO_PEM ~/.ssh/
 echo "Copying .bindle config"
 cp /opt/from_host/config/.bindle/* ~/.bindle/
 
+# Execute the argument past in from the Dockerfile
+${1-bash}
+

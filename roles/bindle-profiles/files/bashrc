@@ -113,5 +113,5 @@ if ! shopt -oq posix; then
   fi
 fi
 
-bash ~/start_services_in_container.sh
+# bash ~/start_services_in_container.sh
 
