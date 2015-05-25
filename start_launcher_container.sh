@@ -34,7 +34,7 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -p 8080:8080 \
         -e "PUBLIC_IP_ADDRESS=$IP_ADDRESS" \
         -e "PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME" \
-        pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash
+        pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash /home/ubuntu/start_services_in_container.sh /bin/bash 
 # Once you are inside the container, you must copy /opt/ssh/$PEM_KEY to /home/ubuntu/.ssh and run "chmod og-r $PEM_KEY". Also,
 # be sure to copy your aws config files for youxia. Then it's business as usual, for a Launcher node.
 
