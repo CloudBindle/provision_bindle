@@ -1,0 +1,145 @@
+---
+
+- name: Install wget
+  apt: name=wget
+
+- name: Create arch3 dir
+  file: name=/home/ubuntu/{{ item }} state=directory owner=ubuntu 
+  with_items:
+    - arch3
+    - arch3/dbsetup
+    - arch3/bin
+    - arch3/config
+
+#######################
+# RabbitMQ
+#######################
+- name: Add RabbitMQ repo
+  apt_repository: repo='deb http://www.rabbitmq.com/debian/ testing main' state=present
+
+- name: Add RabbitMQ key
+  apt_key: url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc state=present
+
+- name: Create rabbitmq.conf.d
+  file: name=/etc/rabbitmq/rabbitmq.conf.d state=directory
+
+- name: Copy over hostname.conf
+  sudo: true
+  copy: src=hostname.conf dest=/etc/rabbitmq/rabbitmq.conf.d/hostname.conf
+
+- name: Install RabbitMQ
+  apt: name=rabbitmq-server update_cache=yes force=yes
+
+- name: Enable RabbitMQ Admin
+  sudo: true
+  command: rabbitmq-plugins enable rabbitmq_management
+
+- name: Start RabbitMQ Service
+  sudo: true
+  service: name=rabbitmq-server state=started 
+
+- name: Install RabbitMQ CLI Admin
+  sudo: true
+  shell: wget -O - -q http://localhost:15672/cli/rabbitmqadmin > /usr/local/sbin/rabbitmqadmin
+
+- name: Add queue_user
+  rabbitmq_user: user=queue_user password=queue vhost=/ configure_priv=.* read_priv=.* write_priv=.* state=present tags=administrator
+
+#######################
+# Postgres
+#######################
+
+# Copied from Seqware-bag
+# Ensure a locale exists.
+- name: Ensure UTF-8 exists
+  sudo: yes
+  shell: locale-gen en_US.UTF-8 && dpkg-reconfigure locales 
+
+# try setting locale? https://stackoverflow.com/questions/27292109/how-to-set-shell-variable-in-ansible-globally
+- name: dev locale
+  action: command sudo update-locale LC_ALL=en_US.utf8
+- name: set default locale
+  sudo: yes
+  lineinfile: dest=/etc/default/locale
+    regexp="LC_ALL"
+    line="LC_ALL=\"en_US.utf8\""
+
+# from https://github.com/zenoamaro/ansible-postgresql
+- name: Adding APT repository key
+  when: ansible_os_family == 'Debian'
+  sudo: yes
+  register: _repo_key
+  apt_key:
+    id: ACCC4CF8
+    url: https://www.postgresql.org/media/keys/ACCC4CF8.asc
+
+- name: Add PostgreSQL official APT repository
+  when: ansible_os_family == 'Debian'
+  sudo: yes
+  register: _repo
+  apt_repository:
+    repo: "deb http://apt.postgresql.org/pub/repos/apt/ {{ansible_distribution_release}}-pgdg main"
+
+- name: install postgres pkgs
+  apt: pkg={{ item }} state=present update_cache=yes cache_valid_time=3600
+  with_items:
+    - libpq-dev
+    - postgresql-9.1
+    - python-psycopg2
+
+- name: setup pg_hba file
+  copy: src=pg_hba.conf dest=/etc/postgresql/9.1/main/pg_hba.conf owner=postgres group=postgres mode=0640
+  register: pg_file
+  
+- name: setup postresql conf file
+  copy: src=postgresql.conf dest=/etc/postgresql/9.1/main/postgresql.conf owner=postgres group=postgres mode=0640
+  register: postgresconf
+
+- name: restart postgres if it changed
+  service: name=postgresql state=restarted enabled=yes
+  when: pg_file.changed
+  
+- name: restart postgres if it changed
+  service: name=postgresql state=restarted enabled=yes
+  when: postgresconf.changed
+
+- name: ensure postgres started 
+  service: name=postgresql state=started enabled=yes
+
+- name: make sure we can sudo as postgres
+  lineinfile: >
+     dest=/etc/sudoers state=present regexp='^seqware ALL=(ALL) NOPASSWD: ALL' line='seqware ALL=(ALL) NOPASSWD: ALL'
+
+- name: make a db user
+  sudo_user: postgres
+  postgresql_user: user=queue_user password=queue role_attr_flags=CREATEDB,SUPERUSER,CREATEROLE,INHERIT,LOGIN
+
+- name: make a db
+  sudo_user: postgres
+  postgresql_db: db=queue_status
+                 owner=queue_user
+                 encoding='UTF-8'
+                 lc_collate='en_US.UTF-8'
+                 lc_ctype='en_US.UTF-8'
+                 template='template0'
+  
+- name: Get the DB schema script
+  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/develop/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
+
+- name: Run DB schema script
+  command: psql -h 127.0.0.1 -U queue_user -w queue_status < /home/ubuntu/arch3/dbsetup/schema.sql
+  environment:
+    PGPASSWORD: queue
+
+
+#######################
+# Install Arch3 JAR
+#######################
+
+- name: Get Architecture3 jar file
+  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_jar }} dest=/home/ubuntu/arch3/bin/pancancer-arch-3-1.0.0.jar
+
+- name: Template masterConfig
+  template: src=../templates/masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json
+
+

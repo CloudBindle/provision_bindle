@@ -31,4 +31,11 @@
     copy: src=/home/ubuntu/.ssh/gnos.pem dest=/home/ubuntu/.ssh/gnos.pem mode=600
   # change permissions
   # chamge owner
-  
+
+# Set up the architecture3 Master components locally, if *this* node is to be the Master.
+# TODO: Make it configurable which node will be the Arch3 Master
+- hosts: bindle
+  sudo: True
+  roles:
+  - { role: arch3_master , tags: ['arch3_master'] } 
+

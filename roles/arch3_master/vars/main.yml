@@ -1,0 +1,11 @@
+---
+pancancer_jar: 1.0.0/pancancer-arch-3-1.0.0.jar
+queueName: pancancer_arch_3
+queueHost: localhost
+queueUser: queue_user
+queuePassword: queue
+hostUser: ubuntu
+max_running_containers: 1
+max_seconds_before_lost: 100
+check_previous_job_hash: false
+results_file: results.txt

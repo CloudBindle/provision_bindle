@@ -21,13 +21,18 @@ sudo apt-get -y install zlib1g-dev
 touch ~/.ssh/gnostest.pem
 touch ~/.ssh/gnos.pem
 git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
-cd architecture-setup 
+cd architecture-setup
+git checkout feature/architecture-setup-3
 # Initialize and update submodules, but let the main architecture-setup playbook check out the right version.
 git submodule init
 git submodule update
+ansible-playbook -i inventory site.yml
 # Some setup needed for youxia
-mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
-cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
-touch ~/.youxia/config
+#mkdir ~/.youxia && mkdir ~/.youxia/youxia_setup && mkdir ~/.youxia/youxia_setup/ssh
+#cp ~/.ssh/*.pem ~/.youxia/youxia_setup/ssh/
+#touch ~/.youxia/config
+cd youxia/youxia-setup
+ansible-playbook -i inventory site.yml
+cd ../ansible_sensu
 ansible-playbook -i inventory site.yml
 
