@@ -1,0 +1,7 @@
+{
+  "workflow_name":"Sanger",
+  "seqware_in_container":"true",
+  "install_workflow":"true",
+  "test_workflow":"true",
+  "workflows":["Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.1","Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.6_SeqWare_1.1.0"]
+}

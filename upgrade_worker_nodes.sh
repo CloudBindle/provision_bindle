@@ -5,12 +5,13 @@ echo "[ Begin Log, "$(date)" ]">>$LOG_FILE
 {
 WORKFLOW_VERSION=$1
 if [ -n "$WORKFLOW_VERSION" ] ; then
-  cd ~/architecture2/pancancer-bag
+  cd ~/architecture-setup/pancancer-bag
   if [ ! -d workflow-update/roles/update_workflow/files ] ; then
     mkdir workflow-update/roles/update_workflow/files
   fi
+  SEQWARE_VERSION=SeqWare_1.1.0
   DOWNLOAD_PATH=workflow-update/roles/update_workflow/files
-  WORKFLOW_FILE=Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_"$WORKFLOW_VERSION"_SeqWare_1.1.0-alpha.5.zip
+  WORKFLOW_FILE=Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_"$WORKFLOW_VERSION"_"$SEQWARE_VERSION".zip
   TARGET_FILE=${DOWNLOAD_PATH}/${WORKFLOW_FILE}
   if [ ! -e $TARGET_FILE ] ; then
     echo "File $TARGET_FILE is not available locally. Downloading workflow now..."

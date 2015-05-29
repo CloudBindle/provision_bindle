@@ -1,12 +1,11 @@
 architecture-setup
 ================
 
-This tool is used to install Bindle and all of its dependencies pertaining to the pancancer project. 
-This will likely grow to include youxia and all other infrastructure used specifically by pancancer. 
+This tool is used to install Bindle and all of its dependencies pertaining to the pancancer project.
 The result is a host that can be used to create new SeqWare images with pancancer workflows pre-installed.
 
 ###Setting up the architecture-setup server
-For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partition.
+For AWS, use an m3.large, with Ubuntu 14.04. You will need an 8 GB root partition.
 
 ###Sets up the following on the desired node(s)
 
@@ -14,6 +13,8 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 * [Seqware-bag](https://github.com/SeqWare/seqware-bag.git)
 * [Pancancer-bag](https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git)
 * [Monitoring-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
+* [workflow-decider] (https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git)
+* [youxia] (https://github.com/CloudBindle/youxia)
 
 ## Setup
 
@@ -21,16 +22,33 @@ For AWS, use an m3.large, with Ubuntu 12.04. You will need an 8 GB root partitio
 You will need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
 
 If you do *not* have a valid GNOS pem key, the setup script will create an empty file for you, but you will need to replace it with a valid key file before setting up any workflows that require it.
+<!--
+This playbook relies upon bindle's install playbook. You will need a fairly current version of git (at least version 1.9.1)
 
-The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single setp, like this:
+    sudo add-apt-repository ppa:git-core/ppa
+    sudo apt-get install git
+    git clone https://github.com/ICGC-TCGA-PanCancer/architecture-setup.git
+    cd architecture-setup 
+    bash setup.sh
+-->
+!!! IMPORTANT !!!    
+You will also need to get a confidential pem key for GNOS upload/download from your GNOS admin or a fellow cloud shepard. Please copy it to /home/ubuntu/.ssh/gnostest.pem before running the next step, or otherwise the Ansible playbook will fail to run completely leaving the system in a half-broken state.
+
+The simplest way to set up the machine you are *currently* logged into as a launcher is to run the `setup.sh` script. You can do this in a single step, like this:
 
     cd ~
     curl -L https://github.com/ICGC-TCGA-PanCancer/architecture-setup/releases/download/2.0.0/setup.sh | bash
+
+The above command will download and execute the setup script for architecture-setup version 2.0.0. If you want to install architecture-setup based on the current develop branch, use this command instead:
+
+    curl -L https://raw.githubusercontent.com/ICGC-TCGA-PanCancer/architecture-setup/develop/setup.sh | bash
 
 Sometimes, parts of the main playbook may fail. If this happens, you may want to try making any changes (if necessary - if it's simply a download that failed, as often happens with the vagrant plugins, you probably don't need to change anything), and re-running the playbook:
 
     cd architecture-setup
     ansible-playbook -i inventory site.yml
+
+If for some reason you need to perform a more manual setup, or you wish to apply the script to an existing launcher, clone this repo and then move the setup script to the *parent* directory before executing it.
 
 <!-- ## Setting up a different host as launcher 
 
@@ -39,7 +57,7 @@ If you wish to setup some other host as the launcher, you will need to edit your
     ansible-playbook -i inventory site.yml
 -->
 
-Navigate to ~/architecture2 and follow the rest of the pancancer-info instructions on how to setup and use bindle
+Now follow the rest of the pancancer-info instructions on how to setup and use bindle
 
 ***
 
@@ -71,12 +89,12 @@ If you have a launcher that has an older version of architecture-setup and you w
 <pre>
   ~/.bindle
   ~/architecture-setup
-  ~/architecture2
     /Bindle
     /monitoring-bag
     /pancancer-bag
     /seqware-bag
     /workflow-decider
+    /youxia
 </pre>
 
 ###upgrade_launcher_and_workers.sh
@@ -96,8 +114,10 @@ This script will checkout a specific version of architecture-setup. It will upda
 Example:
 
     upgrade_architecture_setup.sh -v 1.0.5
+    
+The file `roles/bindle-profiles/vars/main.yml` that is a part of architecture-setup 1.0.5 will be downloaded to the current local repository. Ansible will then be run (`sudo ansible-playbook -i inventory site.yml`).
 
-**NOTE:** This script will update *local* repositories and bindle configuration files. It may warn you if you have changes to files tracked in github, but you may want to make backup copies of any bindle config files (`~/.bindle/*.cfg`), and any important changes you need in `~/architectures2/Bindle`, `~/architectures2/panancer-bag`, `~/architectures2/monitoring-bag`, , `~/architectures2/seqware-bag`, or `~/architectures2/workflow-decider`.
+**NOTE:** This script will update *local* repositories and bindle configuration files. It may warn you if you have changes to files tracked in github, but you may want to make backup copies of any bindle config files (`~/.bindle/*.cfg`), and any important changes you need in `~/architecture-setup/Bindle`, `~/architecture-setup/panancer-bag`, `~/architecture-setup/monitoring-bag`, `~/architecture-setup/youxiua`, `~/architecture-setup/seqware-bag`, or `~/architecture-setup/workflow-decider`.
 
 **NOTE:** This script will exit without error if it detects that the local architecture-setup repository is the same version as the one you requested. This script will exit *with* error (code=1) if it detects that there are changes to any of the loca repositories that it normally would try to check out. It will also exit with error if an error occurs while checking out architecture-setup from github.
 
@@ -105,7 +125,7 @@ The output from this script will be in a file named upgrade_architecture_setup.s
 
 ####get_nodes_for_update.sh
 
-This script will query all nodes accessible vagrant (using `vagrant global-status`). It will generate a new inventory file in `~/architecture2/pancancer-bag/workflow-update/` based on which nodes report that they are "completed" (meaning that their last Sanger workflow run completed without error and they are not currently running another workflow).
+This script will query all nodes accessible vagrant (using `vagrant global-status`). It will generate a new inventory file in `~/architecture-setup/pancancer-bag/workflow-update/` based on which nodes report that they are "completed" (meaning that their last Sanger workflow run completed without error and they are not currently running another workflow).
 
 **NOTE:** This script will exit with error (code=1) if there are no vagrant cannot find any worker nodes running. You can verify this manually by executing `vagrant global-status`.
 
@@ -117,7 +137,7 @@ This script will use the inventory file generated by `get_nodes_for_update.sh` t
 
     bash upgrade_worker_nodes.sh 1.0.5
 
-This will tell the script to download `Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.5_SeqWare_1.1.0-alpha.5.zip` if it is not available. The script will then run the workflow-update playbook, in `~/architecture2/pancancer-bag/workflow-update`.
+This will tell the script to download `Workflow_Bundle_SangerPancancerCgpCnIndelSnvStr_1.0.5_SeqWare_1.1.0-alpha.5.zip` if it is not available. The script will then run the workflow-update playbook, in `~/architecture-setup/pancancer-bag/workflow-update`.
 
 The output from this script will be in a file named upgrade_worker_nodes.sh.
 

@@ -1,17 +1,26 @@
 ---
 # setup Bindle
+- hosts: bindle
+  vars:
+    architecture_setup_path: /home/ubuntu/architecture-setup
+  roles: 
+    - { role: bindle-profiles }
 
 - hosts: bindle
   sudo: True
   tasks:
-  - { include: playbooks/Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
+  - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
         user_name: ubuntu,
         bindle_git_branch: master,
         bindle_config: aws.cfg}
 
-- hosts: bindle
-  roles: 
-    - { role: bindle-profiles }
+- name: workflow-decider install
+  include: workflow-decider/install/site.yml 
+
+#- hosts: bindle
+#  sudo: True
+#  tasks:
+#    - { include: youxia/youxia-setup/site.yml }
 
 - hosts: bindle
   sudo: True
@@ -22,4 +31,11 @@
     copy: src=/home/ubuntu/.ssh/gnos.pem dest=/home/ubuntu/.ssh/gnos.pem mode=600
   # change permissions
   # chamge owner
-  
+
+# Set up the architecture3 Master components locally, if *this* node is to be the Master.
+# TODO: Make it configurable which node will be the Arch3 Master
+- hosts: bindle
+  sudo: True
+  roles:
+  - { role: arch3_master , tags: ['arch3_master'] } 
+

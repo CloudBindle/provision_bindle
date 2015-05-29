@@ -1,50 +1,38 @@
 ---
+# If installing into a docker container, you don't need NTP you can link to the host machine's /etc/localtime
+- name: Check if we're in a docker container
+  stat: path=/.dockerinit
+  register: dockerinit_stat
 
 - name: Install NTP
   sudo: True
   apt: name=ntp state=latest
+  when: not dockerinit_stat.stat.exists
 
 - name: Start NTP on boot
   sudo: True
   service: name=ntp state=started enabled=yes
+  when: not dockerinit_stat.stat.exists
 
+- name: Initialize submodules
+  shell: chdir={{ architecture_setup_path }}
+    git submodule init
 
-- name: Create working dir
-  file: path=/home/{{ user_name }}/architecture2 state=directory owner={{ user_name }} group={{ user_name }}
+- name: Update submodules
+  shell: chdir={{ architecture_setup_path }}
+    git submodule update
 
-- name: Checkout the Bindle git repo
-  git: repo=https://github.com/CloudBindle/Bindle
-       dest=/home/{{ user_name }}/architecture2/Bindle
-       version={{ bindle_git_branch }}
-       force=no
+- name: Get submodule statuses 
+  command: chdir={{ architecture_setup_path }}
+    git submodule foreach 'echo What is checked out? ; git describe --all'
+  register: repo_statuses
 
-- name: Checkout the Seqware git repo
-  git: repo=https://github.com/SeqWare/seqware-bag.git
-       dest=/home/{{ user_name }}/architecture2/seqware-bag
-       version={{ seqware_bag_git_branch }}
-       force=no
+- name: Display submodule statuses
+  debug: var=repo_statuses.stdout_lines
 
-- name: Checkout the pancancer-bag git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
-       dest=/home/{{ user_name }}/architecture2/pancancer-bag
-       version={{ pancancer_bag_git_branch }}
-       force=no
+- name: Copy over bash profile
+  copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc owner=ubuntu
 
-- name: Checkout the monitoring-bag git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
-       dest=/home/{{ user_name }}/architecture2/monitoring-bag
-       version={{ monitoring_bag_git_branch }}
-       force=no
-       
-- name: Checkout the decider git repo
-  git: repo=https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git
-       dest=/home/{{ user_name }}/architecture2/workflow-decider
-       version={{ decider_git_branch }}
-       force=no
+- name: Copy over service startup script
+  copy: src=roles/bindle-profiles/files/start_services_in_container.sh dest=/home/ubuntu/start_services_in_container.sh owner=ubuntu
 
-# TODO: Find a less ugly way to do this... Ideally, the out from a successful run should
-# be here too, not just the output from errors.
-- name: Run decider install from bash
-  shell: chdir=/home/{{ user_name }}/architecture2/workflow-decider/install
-         ansible-playbook -i inventory site.yml
-         creates=/home/{{ user_name }}/architecture2/workflow-decider/install-created

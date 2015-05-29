@@ -1,0 +1,60 @@
+{
+  "variables": {
+    "aws_access_key": "",
+    "aws_secret_key": ""
+  },
+  "builders": [{
+    "type": "amazon-ebs",
+    "access_key": "{{user `aws_access_key`}}",
+    "secret_key": "{{user `aws_secret_key`}}",
+    "region": "us-east-1",
+    "source_ami": "ami-d05e75b8",
+    "instance_type": "m3.xlarge",
+    "ssh_username": "ubuntu",
+    "ami_name": "packer-example {{timestamp}}",
+    "launch_block_device_mappings":[
+      {
+        "device_name":"/dev/sda1",
+        "volume_size":"300"
+      },
+      {
+        "device_name":"/dev/sdb",
+        "no_device":"true"
+      }
+     ]
+    }
+   ],
+  "provisioners": [{
+     "type":"shell",
+     "script":"install_ansible.sh"
+   },
+   {
+     "type":"shell",
+     "inline":[
+       "mkdir /tmp/ansible-files"
+     ]
+   },
+   {
+     "type":"file",
+     "source":"../architecture-setup/pancancer-bag/roles",
+     "destination":"/tmp/ansible-files"
+   },
+   {
+     "type":"file",
+     "source":"../architecture-setup/seqware-bag",
+     "destination":"/tmp/ansible-files"
+   },
+   {
+   "type":"file",
+   "source":"extra_vars.json",
+   "destination":"/tmp/ansible-files/extra_vars.json"
+   },
+   {
+    "type":"ansible-local",
+    "playbook_file":"../architecture-setup/pancancer-bag/pancancer.yml",
+    "staging_directory":"/tmp/ansible-files",
+    "inventory_file":"inventory",
+    "extra_arguments":["--extra-vars","@extra_vars.json","--limit","master"]
+   }
+  ]
+}
