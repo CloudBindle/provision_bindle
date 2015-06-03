@@ -21,8 +21,12 @@ sudo service postgresql start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
+
 echo "Copying.aws credentials to ~/.aws"
 cp /opt/from_host/aws/* ~/.aws/ 
+# Update /etc/hosts so that the container knows it is sensu-server
+echo "Update /etc/hosts for monitoring"
+sudo echo "localhost sensu-server" >> /etc/hosts
 
 # Execute the argument passed in from the Dockerfile
 ${1-bash}
