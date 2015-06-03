@@ -19,6 +19,9 @@ fi
 [[ -d ~/ssh_for_docker ]] || mkdir ~/ssh_for_docker
 # Create a config folder if there isn't one already.
 [[ -d ~/pancancer_launcher_config ]] || mkdir ~/pancancer_launcher_config
+# create the ~/.aws folder, if it doesn't already exist
+[[ -d ~/.aws/ ]] || mkdir ~/.aws
+
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f ~/ssh_for_docker/$PEM_KEY_BASENAME ]] || cp $PEM_KEY ~/ssh_for_docker/$PEM_KEY_BASENAME
