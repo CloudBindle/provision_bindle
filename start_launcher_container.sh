@@ -31,6 +31,7 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -v /home/$USER/ssh_for_docker:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
         -v /etc/localtime:/etc/localtime:ro \
+        --net=host \
         -p 15672:15672 \
         -p 5672:5672 \
         -p 4567:4567 \
