@@ -14,8 +14,8 @@
         bindle_git_branch: master,
         bindle_config: aws.cfg}
 
-- name: workflow-decider install
-  include: workflow-decider/install/site.yml 
+#- name: workflow-decider install
+#  include: workflow-decider/install/site.yml 
 
 #- hosts: bindle
 #  sudo: True
