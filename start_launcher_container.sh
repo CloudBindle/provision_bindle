@@ -16,11 +16,17 @@ else
   IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
 fi
 # Create a folder that will be mounted into the docker container
-[[ -d ~/ssh_for_docker ]] || mkdir ~/ssh_for_docker
+[[ -d ~/pancancer_launcher_ssh ]] || mkdir ~/pancancer_launcher_ssh
 # Create a config folder if there isn't one already.
 [[ -d ~/pancancer_launcher_config ]] || mkdir ~/pancancer_launcher_config
 # create the ~/.aws folder, if it doesn't already exist
 [[ -d ~/.aws/ ]] || mkdir ~/.aws
+
+# Make the host machine a sensu-host for the container. This will only work if you specify "--net=host"
+# in the docker run command. And you can't do it INSIDE the container because docker will not let you
+# modify /etc/hosts
+# On second thought, this seems to confuse rabbitmq - maybe we shouldn't do this...
+#sudo echo "127.0.0.1 sensu-server" >> /etc/hosts
 
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
@@ -31,13 +37,14 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -v /home/$USER/ssh_for_docker:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
         -v /etc/localtime:/etc/localtime:ro \
-        --net=host \
         -p 15672:15672 \
-        -p 5672:5672 \
+        -p 5671:5671 \
         -p 4567:4567 \
         -p 8080:8080 \
+        -p 3000:3000 \
         -e "PUBLIC_IP_ADDRESS=$IP_ADDRESS" \
         -e "PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME" \
+        --add-host sensu-server:127.0.0.1 \
         pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash /home/ubuntu/start_services_in_container.sh /bin/bash 
 # Once you are inside the container, you must copy /opt/ssh/$PEM_KEY to /home/ubuntu/.ssh and run "chmod og-r $PEM_KEY". Also,
 # be sure to copy your aws config files for youxia. Then it's business as usual, for a Launcher node.
