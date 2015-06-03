@@ -124,7 +124,7 @@
                  template='template0'
   
 - name: Get the DB schema script
-  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/develop/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
+  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/{{ pancancer_arch3_version }}/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
 
 - name: Run DB schema script
   command: psql -h 127.0.0.1 -U queue_user -w queue_status < /home/ubuntu/arch3/dbsetup/schema.sql
