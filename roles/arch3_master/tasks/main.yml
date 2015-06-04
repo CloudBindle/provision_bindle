@@ -142,4 +142,9 @@
 - name: Template masterConfig
   template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json
 
+- name: Template youxiaConfig
+  template: src=youxiaConfig.j2 dest=/home/ubuntu/.youxia/config
+
+- name: Template deployer params 
+  template: src=deployer_params.j2 dest=/home/ubuntu/params.json
 
