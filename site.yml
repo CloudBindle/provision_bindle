@@ -15,7 +15,7 @@
         bindle_config: aws.cfg
         }
 
-- hosts: worker
+- hosts: bindle 
   sudo: True
   roles:
     - { role: java, java_provider: Cloudera }
