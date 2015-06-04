@@ -22,11 +22,8 @@ fi
 # create the ~/.aws folder, if it doesn't already exist
 [[ -d ~/.aws/ ]] || mkdir ~/.aws
 
-# Make the host machine a sensu-host for the container. This will only work if you specify "--net=host"
-# in the docker run command. And you can't do it INSIDE the container because docker will not let you
-# modify /etc/hosts
-# On second thought, this seems to confuse rabbitmq - maybe we shouldn't do this...
-#sudo echo "127.0.0.1 sensu-server" >> /etc/hosts
+# Create the ~/.gnos folder if it is not there
+[[ -d ~/.gnos/ ]] || mkdir ~/.gnos
 
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
@@ -36,7 +33,8 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -v /home/$USER/pancancer_launcher_config:/opt/from_host/config:ro \
         -v /home/$USER/pancancer_launcher_ssh:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
-        -v /etc/localtime:/etc/localtime:ro \
+        -v /home/$USER/.gnos/:/opt/from_host/gnos:ro \
+	-v /etc/localtime:/etc/localtime:ro \
         -p 15672:15672 \
         -p 5671:5671 \
         -p 4567:4567 \
