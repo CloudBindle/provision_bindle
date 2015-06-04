@@ -13,11 +13,12 @@ sudo rabbitmqctl add_vhost /sensu
 sudo rabbitmqctl add_user sensu seqware
 sudo rabbitmqctl set_user_tags sensu administrator
 sudo rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"
-echo "Starting up redis, sensu, and postgresql..."
+echo "Starting up redis, sensu, postgresql, and uchiwa..."
 sudo service redis-server start
 sudo service sensu-server start
 sudo service sensu-api start
 sudo service postgresql start
+sudo service uchiwa start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
