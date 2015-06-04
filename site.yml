@@ -3,34 +3,27 @@
 - hosts: bindle
   vars:
     architecture_setup_path: /home/ubuntu/architecture-setup
-    install_bindle: true
   roles: 
-    - { role: bindle-profiles, when: install_bindle }
+    - { role: bindle-profiles }
 
 - hosts: bindle
   sudo: True
-  vars: 
-    install_bindle: true
   tasks:
   - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
         user_name: ubuntu,
         bindle_git_branch: master,
-        bindle_config: aws.cfg,
-        when: install_bindle }
+        bindle_config: aws.cfg
+        }
 
 - hosts: worker
   sudo: True
-  vars:
-    install_java: true
   roles:
-    - { role: java, java_provider: Cloudera, when: install_java }
+    - { role: java, java_provider: Cloudera }
 
 
 # Set up the architecture3 Master components locally, if *this* node is to be the Master.
 # TODO: Make it configurable which node will be the Arch3 Master
 - hosts: bindle
   sudo: True
-  vars: 
-    install_arch3: true
   roles:
-    - { role: arch3_master , tags: ['arch3_master'], when: install_arch3 } 
+    - { role: arch3_master , tags: ['arch3_master'] } 
