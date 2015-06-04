@@ -23,7 +23,7 @@
   vars:
     install_java: true
   roles:
-    - { role: java, java_provider: Cloudera, when: install_bindle }
+    - { role: java, java_provider: Cloudera, when: install_java }
 
 
 # Set up the architecture3 Master components locally, if *this* node is to be the Master.
