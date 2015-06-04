@@ -17,6 +17,7 @@ echo "Starting up redis, sensu, postgresql, and uchiwa..."
 sudo service redis-server start
 sudo service sensu-server start
 sudo service sensu-api start
+sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
 # Copy pem keys and other config files from the host.
@@ -25,6 +26,16 @@ cp $PATH_TO_PEM ~/.ssh/
 
 echo "Copying.aws credentials to ~/.aws"
 cp /opt/from_host/aws/* ~/.aws/ 
+
+if [ $HOST_ENV == "AWS" ] ; then
+  echo "Querying AWS for public IP address of this machine..."
+  PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+  SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+else
+#if [ -z $IP_ADDRESS] ; then
+  PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
+  SENSU_SERVER_IP_ADDRESS=$PUBLIC_IP_ADDRESS
+fi
 
 # Execute the argument passed in from the Dockerfile
 ${1-bash}

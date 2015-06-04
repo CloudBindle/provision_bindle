@@ -8,13 +8,13 @@ if [ -z $HOST_ENV ] ; then
 fi
 
 #TODO: Need a generic solution that will also work for OpenStack, localhost, etc...
-if [ $HOST_ENV == "AWS" ] ; then
-  echo "Querying AWS for public IP address of this machine..."
-  IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
-else
+#if [ $HOST_ENV == "AWS" ] ; then
+#  echo "Querying AWS for public IP address of this machine..."
+#  IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
+#else
 #if [ -z $IP_ADDRESS] ; then
-  IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
-fi
+#  IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
+#fi
 # Create a folder that will be mounted into the docker container
 [[ -d ~/pancancer_launcher_ssh ]] || mkdir ~/pancancer_launcher_ssh
 # Create a config folder if there isn't one already.
@@ -42,7 +42,7 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         -p 4567:4567 \
         -p 8080:8080 \
         -p 3000:3000 \
-        -e "PUBLIC_IP_ADDRESS=$IP_ADDRESS" \
+        -e "HOST_ENV=$HOST_ENV" \
         -e "PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME" \
         --add-host sensu-server:127.0.0.1 \
         pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash /home/ubuntu/start_services_in_container.sh /bin/bash 
