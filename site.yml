@@ -15,7 +15,7 @@
   - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
         user_name: ubuntu,
         bindle_git_branch: master,
-        bindle_config: aws.cfg
+        bindle_config: aws.cfg,
         when: install_bindle }
 
 - hosts: worker
