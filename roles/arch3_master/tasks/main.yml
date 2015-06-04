@@ -10,6 +10,7 @@
     - arch3/dbsetup
     - arch3/bin
     - arch3/config
+    - .youxia 
 
 #######################
 # RabbitMQ
@@ -124,7 +125,7 @@
                  template='template0'
   
 - name: Get the DB schema script
-  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/develop/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
+  get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/{{ pancancer_arch3_version }}/pancancer-arch-3/sql/schema.sql dest=/home/ubuntu/arch3/dbsetup/schema.sql
 
 - name: Run DB schema script
   command: psql -h 127.0.0.1 -U queue_user -w queue_status < /home/ubuntu/arch3/dbsetup/schema.sql
@@ -137,9 +138,14 @@
 #######################
 
 - name: Get Architecture3 jar file
-  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_jar }} dest=/home/ubuntu/arch3/bin/pancancer-arch-3-1.0.0.jar
+  get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_arch3_version }}/pancancer-arch-3-{{ pancancer_arch3_version }}.jar dest=/home/ubuntu/arch3/bin/pancancer-arch-3-{{ pancancer_arch3_version }}.jar
 
 - name: Template masterConfig
-  template: src=../templates/masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json
+  template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json
 
+- name: Template youxiaConfig
+  template: src=youxiaConfig.j2 dest=/home/ubuntu/.youxia/config
+
+- name: Template deployer params 
+  template: src=deployer_params.j2 dest=/home/ubuntu/params.json
 
