@@ -1,21 +1,9 @@
-[submodule "workflow-decider"]
-	path = workflow-decider
-	url = https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git
 [submodule "Bindle"]
 	path = Bindle
 	url = https://github.com/CloudBindle/Bindle.git
 [submodule "monitoring-bag"]
 	path = monitoring-bag
 	url = https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git
-[submodule "pancancer-bag"]
-	path = pancancer-bag
-	url = https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git
-[submodule "seqware-bag"]
-	path = seqware-bag
-	url = https://github.com/SeqWare/seqware-bag.git
-[submodule "youxia"]
-	path = youxia
-	url = https://github.com/CloudBindle/youxia.git
 [submodule "container-host-bag"]
 	path = container-host-bag
 	url = https://github.com/ICGC-TCGA-PanCancer/container-host-bag.git

@@ -12,30 +12,18 @@
   - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
         user_name: ubuntu,
         bindle_git_branch: master,
-        bindle_config: aws.cfg}
+        bindle_config: aws.cfg
+        }
 
-- name: workflow-decider install
-  include: workflow-decider/install/site.yml 
-
-#- hosts: bindle
-#  sudo: True
-#  tasks:
-#    - { include: youxia/youxia-setup/site.yml }
-
-- hosts: bindle
+- hosts: bindle 
   sudo: True
-  tasks:
-  # this seems like the wrong place for this, but not sure what the best place for it is if we cannot redistribute 
-  # with the AMI
-  - name: Copy over pem key for BWA
-    copy: src=/home/ubuntu/.ssh/gnos.pem dest=/home/ubuntu/.ssh/gnos.pem mode=600
-  # change permissions
-  # chamge owner
+  roles:
+    - { role: java, java_provider: Cloudera }
+
 
 # Set up the architecture3 Master components locally, if *this* node is to be the Master.
 # TODO: Make it configurable which node will be the Arch3 Master
 - hosts: bindle
   sudo: True
   roles:
-  - { role: arch3_master , tags: ['arch3_master'] } 
-
+    - { role: arch3_master , tags: ['arch3_master'] } 
