@@ -15,36 +15,10 @@
 #######################
 # RabbitMQ
 #######################
-- name: Add RabbitMQ repo
-  apt_repository: repo='deb http://www.rabbitmq.com/debian/ testing main' state=present
-
-- name: Add RabbitMQ key
-  apt_key: url=https://www.rabbitmq.com/rabbitmq-signing-key-public.asc state=present
-
-- name: Create rabbitmq.conf.d
-  file: name=/etc/rabbitmq/rabbitmq.conf.d state=directory
-
-- name: Copy over hostname.conf
-  sudo: true
-  copy: src=hostname.conf dest=/etc/rabbitmq/rabbitmq.conf.d/hostname.conf
-
-- name: Install RabbitMQ
-  apt: name=rabbitmq-server update_cache=yes force=yes
-
-- name: Enable RabbitMQ Admin
-  sudo: true
-  command: rabbitmq-plugins enable rabbitmq_management
-
-- name: Start RabbitMQ Service
-  sudo: true
-  service: name=rabbitmq-server state=started 
 
 - name: Install RabbitMQ CLI Admin
   sudo: true
-  shell: wget -O - -q http://localhost:15672/cli/rabbitmqadmin > /usr/local/sbin/rabbitmqadmin
-
-- name: Add queue_user
-  rabbitmq_user: user=queue_user password=queue vhost=/ configure_priv=.* read_priv=.* write_priv=.* state=present tags=administrator
+  shell: wget -O - -q https://raw.githubusercontent.com/rabbitmq/rabbitmq-management/rabbitmq_v3_5_3/bin/rabbitmqadmin > /usr/local/sbin/rabbitmqadmin
 
 #######################
 # Postgres
