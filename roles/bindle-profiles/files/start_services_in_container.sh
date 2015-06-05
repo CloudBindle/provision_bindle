@@ -18,7 +18,7 @@ sudo service redis-server start
 sudo service sensu-server start
 sudo service sensu-api start
 sudo service sensu-client start
-sudo service postgresql start
+#sudo service postgresql start
 sudo service uchiwa start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
