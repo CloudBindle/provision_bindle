@@ -23,10 +23,14 @@ sudo service uchiwa start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
-chmod 600 ~/.ssh/*
+echo "Updating permissions on ~/.ssh/$(basename $PATH_TO_PEM)"
+chmod 600 ~/.ssh/$(basename $PATH_TO_PEM)
+
+echo "Copying GNOS keys to ~/.gnos"
+cp /opt/from_host/gnos/* ~/.gnos/
 
 echo "Copying.aws credentials to ~/.aws"
-cp /opt/from_host/aws/* ~/.aws/ 
+cp /opt/from_host/aws/* ~/.aws/
 
 if [ $HOST_ENV == "AWS" ] ; then
   echo "Querying AWS for public IP address of this machine..."
