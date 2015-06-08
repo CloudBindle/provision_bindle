@@ -1,25 +1,9 @@
 #! /bin/bash
 
-# echo "Starting up Launcher services, starting with rabbitmq..."
-sudo service rabbitmq-server start
+# Converting this to ansible to simplify container setup with docker compose
+echo "Starting up launcher services ..."
+ansible-playbook /docker-start.yml -c local
 
-echo "Adding rabbitmq users and vhosts..."
-# rabbitmq users for arch3
-sudo rabbitmqctl add_user queue_user queue
-sudo rabbitmqctl set_permissions queue_user ".*" ".*" ".*"
-sudo rabbitmqctl set_user_tags queue_user administrator
-# rabbitmq users for youxia sensu
-sudo rabbitmqctl add_vhost /sensu
-sudo rabbitmqctl add_user sensu seqware
-sudo rabbitmqctl set_user_tags sensu administrator
-sudo rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"
-echo "Starting up redis, sensu, postgresql, and uchiwa..."
-sudo service redis-server start
-sudo service sensu-server start
-sudo service sensu-api start
-sudo service sensu-client start
-#sudo service postgresql start
-sudo service uchiwa start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
