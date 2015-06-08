@@ -2,7 +2,7 @@
 
 # Converting this to ansible to simplify container setup with docker compose
 echo "Starting up launcher services ..."
-ansible-playbook /docker-start.yml -c local
+ansible-playbook /home/ubuntu/docker-start.yml -c local
 
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
