@@ -30,11 +30,12 @@ PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f ~/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY ~/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 # After running this command, you will have to run "sudo docker attach launcher" to get into the container.
 docker run -i -t -P --privileged=true --name pancancer_launcher \
-        -v /home/$USER/pancancer_launcher_config:/opt/from_host/config:ro \
+        -v /home/$USER/pancancer_launcher_config:/opt/from_host/config:rw \
         -v /home/$USER/pancancer_launcher_ssh:/opt/from_host/ssh:ro \
         -v /home/$USER/.aws/:/opt/from_host/aws:ro \
         -v /home/$USER/.gnos/:/opt/from_host/gnos:ro \
 	-v /etc/localtime:/etc/localtime:ro \
+        --restart=always \
         -p 15672:15672 \
         -p 5671:5671 \
         -p 4567:4567 \
