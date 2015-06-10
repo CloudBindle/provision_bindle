@@ -35,6 +35,7 @@ docker run -i -t -P --privileged=true --name pancancer_launcher \
         --restart=always \
         -p 15672:15672 \
         -p 5671:5671 \
+        -p 5672:5672 \
         -p 4567:4567 \
         -p 8080:8080 \
         -p 3000:3000 \
