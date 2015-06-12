@@ -100,7 +100,9 @@ docker run -i -t -P --privileged=true --name pancancer_launcher
 CMD_STR
 )
 
-DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed s/$/\\\\/g )
-DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed '$ s/.$//g' )
+#DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed s/$/\\\\/g )
+#DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed '$ s/.$//g' )
 
+echo "The command that will be executed is:"
 echo -e "$DOCKER_CMD"
+$(echo -e "$DOCKER_CMD")
