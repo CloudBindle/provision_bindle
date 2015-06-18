@@ -57,7 +57,7 @@ if [[ -n $E2E_TEST && $E2E_TEST == 'true' ]] ; then
     WORKER_TYPE=$HOST_ENV
   fi
   # This command will launch workers once the container starts
-  POST_START_CMD="\"/bin/bash /home/ubuntu/launch_workers.sh ${WORKER_TYPE,,} $WORKER_NAME exit\""
+  POST_START_CMD="/bin/bash /home/ubuntu/launch_workers.sh ${WORKER_TYPE,,} $WORKER_NAME exit"
   # Add a shared volume for test results.
   TEST_RESULT_VOLUME="\n\t-v /home/$USER/pancancer_launcher_test_results:/opt/from_host/test_results:rw"
 fi
