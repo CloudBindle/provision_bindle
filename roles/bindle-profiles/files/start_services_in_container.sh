@@ -34,15 +34,16 @@ cp /opt/from_host/aws/* ~/.aws/
 
 echo "HOST_ENV is $HOST_ENV"
 
-if [ $HOST_ENV == "AWS" ] ; then
+if [ "$HOST_ENV" == "AWS" ] ; then
   echo "Querying AWS for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
-elif [ $HOST_ENV == 'OPENSTACK' ] ; then
+elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+  # TODO: OpenStack could potential use a mounted drive for metadata instead of a service running at an IP address.
 else
 #if [ -z $IP_ADDRESS] ; then
   # Used when running the container on a workstation, not in a cloud.

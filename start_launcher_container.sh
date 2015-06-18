@@ -79,14 +79,10 @@ fi
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f ~/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY ~/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 
-# This is so that when running on Jenkins, we don't use "-i -t"
-INTERACTIVE=''
-[[ $- == *i* ]] && echo 'Interactive' || echo 'Not interactive'
-INTERACTIVE=$([[ $- == *i* ]] && echo ' -i -t ' || echo ' ' )
-
+INTERACTIVE=$( [ ! -z $JENKINS_RUN_OPT ] && echo $JENKINS_RUN_OPT || echo ' -i ' )
 
 DOCKER_CMD=$(cat <<CMD_STR
-docker run $INTERACTIVE -P --privileged=true --name pancancer_launcher 
+docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher 
         -v /home/$USER/pancancer_launcher_config:/opt/from_host/config:rw 
         -v /home/$USER/pancancer_launcher_ssh:/opt/from_host/ssh:ro         $TEST_RESULT_VOLUME
         -v /home/$USER/.aws/:/opt/from_host/aws:ro 
