@@ -32,6 +32,8 @@ cp /opt/from_host/gnos/* ~/.gnos/
 echo "Copying.aws credentials to ~/.aws"
 cp /opt/from_host/aws/* ~/.aws/
 
+echo "HOST_ENV is $HOST_ENV"
+
 if [ $HOST_ENV == "AWS" ] ; then
   echo "Querying AWS for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
