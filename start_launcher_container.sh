@@ -94,8 +94,8 @@ docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -p 4567:4567 
         -p 8080:8080 
         -p 3000:3000 
-        -e "HOST_ENV=$HOST_ENV" 
-        -e "PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME" 
+        -e HOST_ENV=$HOST_ENV 
+        -e PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME 
         --add-host sensu-server:127.0.0.1 
         pancancer/pancancer_launcher:$IMAGE_VERSION /bin/bash /home/ubuntu/start_services_in_container.sh $POST_START_CMD 
 CMD_STR
