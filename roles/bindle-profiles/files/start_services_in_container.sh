@@ -56,9 +56,10 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
-# I know this syntax is a little weird, read more about it here:
+# I know this syntax is a little less common, read more about it here:
 # http://wiki.bash-hackers.org/syntax/pe#use_a_default_value
 CMD=${1-bash}
+# shift will shift all arguments by 1, so *now* $1 is the first argument to the command that was earlier in $1
 shift
 $CMD $@
 
