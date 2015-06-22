@@ -127,6 +127,12 @@ The output from this script will be in a file named upgrade_architecture_setup.s
 
 This script will query all nodes accessible vagrant (using `vagrant global-status`). It will generate a new inventory file in `~/architecture-setup/pancancer-bag/workflow-update/` based on which nodes report that they are "completed" (meaning that their last Sanger workflow run completed without error and they are not currently running another workflow).
 
+This script takes one mandatory argument and one optional argument. The first argument is mandatory and specifies the workflow version. The second argument is optional and specifies the workflow name. It will refer to the Sanger workflow by default if the user omits it. For example:
+
+    get_nodes_for_update.sh 1.0.6 Workflow_Bundle_SomeWorkflow
+    
+Will look for workers that are currently running `SomeWorkflow` at version 1.0.6.
+
 **NOTE:** This script will exit with error (code=1) if there are no vagrant cannot find any worker nodes running. You can verify this manually by executing `vagrant global-status`.
 
 The output from this script will be in a file named get_nodes_for_update.sh.log.
