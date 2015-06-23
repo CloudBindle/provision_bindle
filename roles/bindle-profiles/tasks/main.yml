@@ -34,5 +34,8 @@
   copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc owner=ubuntu
 
 - name: Copy over service startup script
-  copy: src=roles/bindle-profiles/files/start_services_in_container.sh dest=/home/ubuntu/start_services_in_container.sh owner=ubuntu
+  copy: src=roles/bindle-profiles/files/start_services_in_container.sh dest=/home/ubuntu/start_services_in_container.sh owner=ubuntu mode="a+x"
+
+- name: Copy over script that starts up workers (used for e2e integration testing)
+  copy: src=roles/bindle-profiles/files/launch_workers.sh dest=/home/ubuntu/launch_workers.sh owner=ubuntu mode="a+x"
 
