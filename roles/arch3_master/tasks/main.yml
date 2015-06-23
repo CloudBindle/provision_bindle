@@ -141,7 +141,7 @@
   get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_arch3_version }}/pancancer-arch-3-{{ pancancer_arch3_version }}.jar dest=/home/ubuntu/arch3/bin/pancancer-arch-3-{{ pancancer_arch3_version }}.jar
 
 - name: Template masterConfig
-  template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.json owner=ubuntu
+  template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.ini owner=ubuntu
 
 - name: Template youxiaConfig
   template: src=youxiaConfig.j2 dest=/home/ubuntu/.youxia/config owner=ubuntu
