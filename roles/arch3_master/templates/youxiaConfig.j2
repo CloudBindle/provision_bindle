@@ -19,13 +19,16 @@ openstack_password = <password>
 openstack_endpoint = http://10.5.73.21:5000/v2.0
 openstack_key_name = <key name on OpenStack>
 openstack_ssh_key = <path to SSH key>
-openstack_zone = <zone>
+openstack_region = <region>
+# openstack_zone = <zone>
 
 [deployer]
 ami_image = <image id>
 instance_type = m1.xlarge
 security_group = <security group>
 product = Linux/UNIX
+# disable this for integration with pancancer_launcher
+disable_sensu_server = true
 
 [deployer_openstack]
 min_cores = 4 
