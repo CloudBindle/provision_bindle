@@ -49,7 +49,7 @@
 
 - name: Make rabbitmqadmin executable
   sudo: true
-  file: /usr/local/sbin/rabbitmqadmin mode="a+x"
+  file: path=/usr/local/sbin/rabbitmqadmin mode="a+x"
 
 #######################
 # Postgres
