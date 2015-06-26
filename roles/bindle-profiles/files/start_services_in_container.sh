@@ -57,6 +57,12 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 # Update the params.json for youxia with the sensu server IP address
 sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\"/g' ~/params.json
 
+echo RabbitMQ stats:
+echo "vhosts: " && rabbitmqadmin list vhosts
+echo "users: " &&  rabbitmqadmin list users 
+echo "exchanges: " && rabbitmqadmin list exchanges
+echo "queues: " &&  rabbitmqadmin list queues vhost name node messages
+
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
