@@ -145,6 +145,9 @@
 - name: Get Architecture3 jar file
   get_url: url=https://seqwaremaven.oicr.on.ca/artifactory/seqware-release/io/cancer/collaboratory/pancancer-arch-3/{{ pancancer_arch3_version }}/pancancer-arch-3-{{ pancancer_arch3_version }}.jar dest=/home/ubuntu/arch3/bin/pancancer-arch-3-{{ pancancer_arch3_version }}.jar
 
+- name: Create symlink to Architecture3 jar
+  file: path=/home/ubuntu/arch3/pancancer.jar src=/home/ubuntu/arch3/bin/pancancer-arch-3-{{ pancancer_arch3_version }}.jar state=link
+
 - name: Template masterConfig
   template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.ini owner=ubuntu
 
