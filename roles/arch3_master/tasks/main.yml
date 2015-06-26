@@ -15,6 +15,7 @@
 #######################
 # RabbitMQ
 #######################
+
 - name: Add RabbitMQ repo
   apt_repository: repo='deb http://www.rabbitmq.com/debian/ testing main' state=present
 
@@ -39,12 +40,16 @@
   sudo: true
   service: name=rabbitmq-server state=started 
 
+- name: Add queue_user
+  rabbitmq_user: user=queue_user password=queue vhost=/ configure_priv=.* read_priv=.* write_priv=.* state=present tags=administrator
+
 - name: Install RabbitMQ CLI Admin
   sudo: true
   shell: wget -O - -q http://localhost:15672/cli/rabbitmqadmin > /usr/local/sbin/rabbitmqadmin
 
-- name: Add queue_user
-  rabbitmq_user: user=queue_user password=queue vhost=/ configure_priv=.* read_priv=.* write_priv=.* state=present tags=administrator
+- name: Make rabbitmqadmin executable
+  sudo: true
+  file: /usr/local/sbin/rabbitmqadmin mode="a+x"
 
 #######################
 # Postgres
@@ -149,3 +154,5 @@
 - name: Template deployer params 
   template: src=deployer_params.j2 dest=/home/ubuntu/params.json owner=ubuntu
 
+- name: Get Arch3 cleanup script
+  get_url: https://github.com/CancerCollaboratory/sandbox/blob/{{ pancancer_arch3_version }}/pancancer-arch-3/scripts/cleanup.sh dest=/home/ubuntu/arch3/bin/cleanup.sh
