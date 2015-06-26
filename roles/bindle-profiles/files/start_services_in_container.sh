@@ -55,7 +55,7 @@ echo "Public IP address: $PUBLIC_IP_ADDRESS"
 echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 
 # Update the params.json for youxia with the sensu server IP address
-sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\"/g' ~/params.json
+sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 
 echo RabbitMQ stats:
 echo "vhosts: " && rabbitmqadmin list vhosts
