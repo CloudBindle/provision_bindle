@@ -6,14 +6,14 @@
   roles: 
     - { role: bindle-profiles }
 
-- hosts: bindle
-  sudo: True
-  tasks:
-  - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
-        user_name: ubuntu,
-        bindle_git_branch: master,
-        bindle_config: aws.cfg
-        }
+#- hosts: bindle
+#  sudo: True
+#  tasks:
+#  - { include: Bindle/install/roles/bindle-dependencies/tasks/main.yml, 
+#        user_name: ubuntu,
+#        bindle_git_branch: master,
+#        bindle_config: aws.cfg
+#        }
 
 - hosts: bindle 
   sudo: True
