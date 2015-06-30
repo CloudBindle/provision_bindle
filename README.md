@@ -10,8 +10,6 @@ For AWS, use an m3.large, with Ubuntu 14.04. You will need an 8 GB root partitio
 ###Sets up the following on the desired node(s)
 
 * [Bindle](https://github.com/CloudBindle/Bindle)
-* [Seqware-bag](https://github.com/SeqWare/seqware-bag.git)
-* [Pancancer-bag](https://github.com/ICGC-TCGA-PanCancer/pancancer-bag.git)
 * [Monitoring-bag](https://github.com/ICGC-TCGA-PanCancer/monitoring-bag.git)
 * [workflow-decider] (https://github.com/ICGC-TCGA-PanCancer/workflow-decider.git)
 * [youxia] (https://github.com/CloudBindle/youxia)
@@ -91,8 +89,6 @@ If you have a launcher that has an older version of architecture-setup and you w
   ~/architecture-setup
     /Bindle
     /monitoring-bag
-    /pancancer-bag
-    /seqware-bag
     /workflow-decider
     /youxia
 </pre>
