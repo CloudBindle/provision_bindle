@@ -54,6 +54,16 @@ fi
 echo "Public IP address: $PUBLIC_IP_ADDRESS"
 echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 
+# Update the params.json for youxia with the sensu server IP address for sensu and also for queueHost
+sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
+sed -i.bak 's/\"queueHost\": \"localhost\",/\"queueHost\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
+
+echo RabbitMQ stats:
+echo "vhosts: " && rabbitmqadmin list vhosts
+echo "users: " &&  rabbitmqadmin list users
+echo "exchanges: " && rabbitmqadmin list exchanges
+echo "queues: " &&  rabbitmqadmin list queues vhost name node messages
+
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
@@ -62,4 +72,3 @@ CMD=${1-bash}
 # shift will shift all arguments by 1, so *now* $1 is the first argument to the command that was earlier in $1
 shift
 $CMD $@
-
