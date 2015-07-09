@@ -6,16 +6,16 @@ echo "Launching worker of type: $WORKER_TYPE"
 
 # before launching workers, try to copy from the shared volume
 
-cp /opt/from_host/youxia_config ~/.youxia/config
-cp /opt/from_host/params.json ~/params.json
-cp /opt/from_host/masterConfig.ini ~/arch3/config/masterConfig.ini
+cp /opt/from_host/config/youxia_config ~/.youxia/config
+cp /opt/from_host/config/params.json ~/params.json
+cp /opt/from_host/config/masterConfig.ini ~/arch3/config/masterConfig.ini
 
 # now that we have config files, let's launch something!
 
 cd ~/arch3/
-OS_FLAG=
+OS_FLAG=""
 if [ "$WORKER_TYPE" == "openstack" ] ; then
-  OS_FLAG = " --openstack"
+  OS_FLAG=" --openstack"
 fi
 
 # Deploying a new worker can also cause them to self-test installed workflows.
