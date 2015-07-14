@@ -1,7 +1,7 @@
 architecture-setup
 ==================
 
-architecture-setup is used by pancancer\_launcher to create a docker image that can be used to create and manage a fleet of VMs that will run SeqWare workflows.
+architecture-setup is used by [pancancer\_launcher](https://github.com/ICGC-TCGA-PanCancer/pancancer_launcher/) to create a docker image that can be used to create and manage a fleet of VMs that will run SeqWare workflows.
 
 ##Submodules of architecture-setup:
 
