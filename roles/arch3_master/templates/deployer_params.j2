@@ -9,10 +9,12 @@
     "Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0"
   ],
   "install_workflow": "true",
-  "test_workflow": "true",
+  "test_workflows": "true",
   "queueHost": "{{ queueHost }}",
   "queueName": "{{ queueName }}",
   "lvm_device_whitelist": "/dev/xvdb,/dev/xvdc,/dev/xvdd,/dev/xvde",
   "single_node_lvm": true,
-  "pancancer_arch3_version": "{{ pancancer_arch3_version }}"
+  "pancancer_arch3_version": "{{ pancancer_arch3_version }}",
+  "seqware_engine": "whitestar",
+  "seqware_use_custom_settings": false
 }
