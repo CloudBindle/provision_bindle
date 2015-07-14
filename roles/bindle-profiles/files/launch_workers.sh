@@ -27,4 +27,4 @@ java -cp pancancer.jar io.cloudbindle.youxia.deployer.Deployer --ansible-playboo
 #${3-bash}
 
 #Now clean up the nodes we created.
-java -cp pancancer.jar io.cloudbindle.youxia.reaper.Reaper --kill-limit 0
+java -cp pancancer.jar io.cloudbindle.youxia.reaper.Reaper --kill-limit 0 $OS_FLAG
