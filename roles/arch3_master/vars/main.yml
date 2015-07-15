@@ -9,4 +9,4 @@ max_running_containers: 1
 max_seconds_before_lost: 100
 check_previous_job_hash: false
 results_file: results.txt
-managed_tag: pipboy
+managed_tag: "{{ lookup('env','FLEET_NAME') }}"

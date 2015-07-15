@@ -1,15 +1,75 @@
-#! /usr/bin/bash
+#! /bin/bash
 
-PEM_KEY=$1
-IMAGE_VERSION=$2
-HOST_ENV=$3
-E2E_TEST=$4
+#PEM_KEY=$1
+#IMAGE_VERSION=$2
+#HOST_ENV=$3
+#E2E_TEST=$4
 RESTART_POLICY="\n\t--restart=always"
 POST_START_CMD=/home/ubuntu/start_services_in_container.sh
 TEST_RESULT_VOLMUE=
 INTERACTIVE=" -i "
 MOUNTED_VOLUME_PREFIX="/home/$USER"
 
+
+while [[ $# > 0 ]] ; do
+  key="$1"
+  case $key in
+    -p|--pem_key)
+      PEM_KEY="$2"
+      shift
+    ;;
+    -i|--image_version)
+      IMAGE_VERSION="$2"
+      shift
+    ;;
+    -e|--host_env)
+      HOST_ENV="$2"
+      shift
+    ;;
+    -t|--test_mode)
+      E2E_TEST="$2"
+      shift
+    ;;
+    -f|--fleet_name)
+      FLEET_NAME="$2"
+      shift
+    ;;
+    --target_env)
+      TARGET_ENV="$2"
+      shift
+    ;;
+    -h|--help)
+    cat <<HELP_MESSAGE
+This script will start up pancancer_launcher.
+
+Options are:
+  -p, --pem_key - The path to the pem key file you want to use to start up new workers.
+  -i, --image_version - The version of pancancer_launcher you want to run.
+  -e, --host_env - The host environment you are running in (Either "AWS" or "OPENSTACK"). If you do not specify a value, "AWS" will be defaulted.
+  -t, --test_mode - Run in test mode (lauches workers immediately when container starts). Defaults to "false"
+  -f, --fleet_name - The name of the fleet of workers that will be managed by this launcher. If you do not specify one, a random name will be generated.
+  --target_env - Only used when running in test mode.
+  -h, --help - Prints this message.
+HELP_MESSAGE
+      exit 0
+    ;;
+  esac
+  shift
+done
+
+cat <<ARGS_MESSAGE
+Specified arguments are:
+  PEM key:          $PEM_KEY
+  Image version:    $IMAGE_VERSION
+  Host environment: $HOST_ENV
+  Fleet name:       $FLEET_NAME
+  Test mode:        $E2E_TEST
+ARGS_MESSAGE
+
+if [ -z $FLEET_NAME ] ; then
+  FLEET_NAME="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12 )"
+  echo "You did not specify a fleet name, so a random name has been generated for your fleet: ${FLEET_NAME}"
+fi
 # HOST_ENV is used *inside* the container to determine how to get the PUBLIC_IP_ADDRESS.
 # Options are: AWS, OPENSTACK, local
 if [ -z $HOST_ENV ] ; then
@@ -18,18 +78,18 @@ fi
 
 # User must specify a PEM key and it must be a valid file.
 if [ -z $PEM_KEY ] ; then
-  echo "You must pass the path to a valid key file as the first argument."
+  echo "You must pass the path to a valid key file for the \"-p\" option."
   exit 1
 else
   if [ ! -f $PEM_KEY ] ; then
-    echo "The path you pass for the key file must be value. Please ensure that $PEM_KEY is a valid path."
+    echo "The path you pass for the key file must be valid. Please ensure that \"$PEM_KEY\" is a valid path."
     exit 1
   fi
 fi
 
 # User must specify an image version.
-if [ -z $IMAGE_VERSION ] ; then 
-  echo "You must pass an image version as the second argument."
+if [ -z $IMAGE_VERSION ] ; then
+  echo "You must pass an image version for the \"-i\" option."
   exit 1
 fi
 
@@ -51,11 +111,11 @@ if [[ -n $E2E_TEST && $E2E_TEST == 'true' ]] ; then
   MOUNTED_VOLUME_PREFIX=$PWD
   # user *must* specify if they want to test against AWS or OpenStack, if they are running the launcher in a local context (i.e. their personal workstation)
   if [ $HOST_ENV == 'local' ] ; then
-    if [ -z $5 ] ; then 
-      echo "If you are running your container locally (not in a cloud environment), you MUST specify a worker type as the fourth argument for this script (either \"aws\" or \"openstack\")."
+    if [ -z $TARGET_ENV ] ; then
+      echo "If you are running your container locally (not in a cloud environment), you MUST specify a worker type as \"--target_env ENV\" for this script (either \"aws\" or \"openstack\")."
       exit 1
     else
-      WORKER_TYPE=$5
+      WORKER_TYPE=$TARGET_ENV
     fi
   else
     WORKER_TYPE=$HOST_ENV
@@ -86,21 +146,22 @@ PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 
 DOCKER_CMD=$(cat <<CMD_STR
-docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher 
-        -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw 
+docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
+        -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh:/opt/from_host/ssh:ro         $TEST_RESULT_VOLUME
-        -v $MOUNTED_VOLUME_PREFIX/.aws/:/opt/from_host/aws:ro 
-        -v $MOUNTED_VOLUME_PREFIX/.gnos/:/opt/from_host/gnos:ro 
+        -v $MOUNTED_VOLUME_PREFIX/.aws/:/opt/from_host/aws:ro
+        -v $MOUNTED_VOLUME_PREFIX/.gnos/:/opt/from_host/gnos:ro
 	-v /etc/localtime:/etc/localtime:ro         $RESTART_POLICY
-        -p 15672:15672 
-        -p 5671:5671 
-        -p 5672:5672 
-        -p 4567:4567 
-        -p 8080:8080 
-        -p 3000:3000 
-        -e HOST_ENV=$HOST_ENV 
+        -p 15672:15672
+        -p 5671:5671
+        -p 5672:5672
+        -p 4567:4567
+        -p 8080:8080
+        -p 3000:3000
+        -e FLEET_NAME=$FLEET_NAME
+        -e HOST_ENV=$HOST_ENV
         -e PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME
-        --add-host sensu-server:127.0.0.1 
+        --add-host sensu-server:127.0.0.1
         pancancer/pancancer_launcher:$IMAGE_VERSION $POST_START_CMD
 
 CMD_STR
