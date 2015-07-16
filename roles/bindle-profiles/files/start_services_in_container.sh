@@ -1,25 +1,5 @@
 #! /bin/bash
 
-# echo "Starting up Launcher services, starting with rabbitmq..."
-sudo service rabbitmq-server start
-
-echo "Adding rabbitmq users and vhosts..."
-# rabbitmq users for arch3
-sudo rabbitmqctl add_user queue_user queue
-sudo rabbitmqctl set_permissions queue_user ".*" ".*" ".*"
-sudo rabbitmqctl set_user_tags queue_user administrator
-# rabbitmq users for youxia sensu
-sudo rabbitmqctl add_vhost /sensu
-sudo rabbitmqctl add_user sensu seqware
-sudo rabbitmqctl set_user_tags sensu administrator
-sudo rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"
-echo "Starting up redis, sensu, postgresql, and uchiwa..."
-sudo service redis-server start
-sudo service sensu-server start
-sudo service sensu-api start
-sudo service sensu-client start
-sudo service postgresql start
-sudo service uchiwa start
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
@@ -63,6 +43,27 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sed -i.bak 's/\"queueHost\": \"localhost\",/\"queueHost\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sudo sed -i.bak 's/_*sensu-server_localhost/'${FLEET_NAME}'_sensu-server_'${SENSU_SERVER_IP_ADDRESS}'/g' /etc/sensu/conf.d/client.json
+
+# echo "Starting up Launcher services, starting with rabbitmq..."
+sudo service rabbitmq-server start
+
+echo "Adding rabbitmq users and vhosts..."
+# rabbitmq users for arch3
+sudo rabbitmqctl add_user queue_user queue
+sudo rabbitmqctl set_permissions queue_user ".*" ".*" ".*"
+sudo rabbitmqctl set_user_tags queue_user administrator
+# rabbitmq users for youxia sensu
+sudo rabbitmqctl add_vhost /sensu
+sudo rabbitmqctl add_user sensu seqware
+sudo rabbitmqctl set_user_tags sensu administrator
+sudo rabbitmqctl set_permissions -p /sensu sensu ".*" ".*" ".*"
+echo "Starting up redis, sensu, postgresql, and uchiwa..."
+sudo service redis-server start
+sudo service sensu-server start
+sudo service sensu-api start
+sudo service sensu-client start
+sudo service postgresql start
+sudo service uchiwa start
 
 echo RabbitMQ stats:
 echo "vhosts: " && rabbitmqadmin list vhosts
