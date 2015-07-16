@@ -145,6 +145,14 @@ fi
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 
+# If running the container on a workstation, the Public IP address should be that of the host machine, so this needs to be passed into the container as a variable.
+if [ $HOST_ENV == 'local' ] ; then
+  PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
+  if [ -z $PUBLIC_IP_ADDRESS ] ; then
+    PUBLIC_IP_ADDRESS_STR="\n\t-e HOST_PUBLIC_IP_ADDRESS=$PUBLIC_IP_ADDRESS"
+  fi
+fi
+
 DOCKER_CMD=$(cat <<CMD_STR
 docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
@@ -158,7 +166,7 @@ docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -p 4567:4567
         -p 8080:8080
         -p 3000:3000
-        -e FLEET_NAME=$FLEET_NAME
+        -e FLEET_NAME=$FLEET_NAME $PUBLIC_IP_ADDRESS_STR
         -e HOST_ENV=$HOST_ENV
         -e PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME
         --add-host sensu-server:127.0.0.1

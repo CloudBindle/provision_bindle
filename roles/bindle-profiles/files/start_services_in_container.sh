@@ -47,8 +47,13 @@ elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
 else
 #if [ -z $IP_ADDRESS] ; then
   # Used when running the container on a workstation, not in a cloud.
-  export PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
-  export SENSU_SERVER_IP_ADDRESS=$PUBLIC_IP_ADDRESS
+  if [ -z $HOST_PUBLIC_IP_ADDRESS ] ; then
+    export PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
+    export SENSU_SERVER_IP_ADDRESS=$PUBLIC_IP_ADDRESS
+  else
+    export PUBLIC_IP_ADDRESS=$HOST_PUBLIC_IP_ADDRESS
+    export SENSU_SERVER_IP_ADDRESS=$HOST_PUBLIC_IP_ADDRESS
+  fi
 fi
 
 echo "Public IP address: $PUBLIC_IP_ADDRESS"
@@ -57,7 +62,7 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 # Update the params.json for youxia with the sensu server IP address for sensu and also for queueHost
 sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sed -i.bak 's/\"queueHost\": \"localhost\",/\"queueHost\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
-sudo sed -i.bak 's/sensu-server_localhost/'${FLEET_NAME}'_sensu-server_'${SENSU_SERVER_IP_ADDRESS}'/g' /etc/sensu/conf.d/client.json
+sudo sed -i.bak 's/_*sensu-server_localhost/'${FLEET_NAME}'_sensu-server_'${SENSU_SERVER_IP_ADDRESS}'/g' /etc/sensu/conf.d/client.json
 
 echo RabbitMQ stats:
 echo "vhosts: " && rabbitmqadmin list vhosts
