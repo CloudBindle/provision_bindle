@@ -146,27 +146,29 @@ PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 
 # If running the container on a workstation, the Public IP address should be that of the host machine, so this needs to be passed into the container as a variable.
-if [ $HOST_ENV == 'local' ] ; then
+if [ "$HOST_ENV" = "local" ] ; then
   PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
-  if [ -z $PUBLIC_IP_ADDRESS ] ; then
+  echo $PUBLIC_IP_ADDRESS
+  if [ -n $PUBLIC_IP_ADDRESS ] ; then
     PUBLIC_IP_ADDRESS_STR="\n\t-e HOST_PUBLIC_IP_ADDRESS=$PUBLIC_IP_ADDRESS"
   fi
 fi
-
+echo ENV IS $HOST_ENV
+echo PUBLIC IP STR $PUBLIC_IP_ADDRESS_STR
 DOCKER_CMD=$(cat <<CMD_STR
 docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
-        -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh:/opt/from_host/ssh:ro         $TEST_RESULT_VOLUME
+        -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh:/opt/from_host/ssh:ro
         -v $MOUNTED_VOLUME_PREFIX/.aws/:/opt/from_host/aws:ro
         -v $MOUNTED_VOLUME_PREFIX/.gnos/:/opt/from_host/gnos:ro
-	-v /etc/localtime:/etc/localtime:ro         $RESTART_POLICY
+        -v /etc/localtime:/etc/localtime:ro $TEST_RESULT_VOLUME $PUBLIC_IP_ADDRESS_STR $RESTART_POLICY
         -p 15672:15672
         -p 5671:5671
         -p 5672:5672
         -p 4567:4567
         -p 8080:8080
         -p 3000:3000
-        -e FLEET_NAME=$FLEET_NAME $PUBLIC_IP_ADDRESS_STR
+        -e FLEET_NAME=$FLEET_NAME
         -e HOST_ENV=$HOST_ENV
         -e PATH_TO_PEM=/opt/from_host/ssh/$PEM_KEY_BASENAME
         --add-host sensu-server:127.0.0.1
