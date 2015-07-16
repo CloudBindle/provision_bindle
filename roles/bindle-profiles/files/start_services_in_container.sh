@@ -71,6 +71,24 @@ echo "users: " &&  rabbitmqadmin list users
 echo "exchanges: " && rabbitmqadmin list exchanges
 echo "queues: " &&  rabbitmqadmin list queues vhost name node messages
 
+cat <<HELP_MESSAGE
+
+
+**************************************
+* Welcome to the Pancancer Launcher! *
+**************************************
+
+This docker container can be used to launch and control pancancer worker VMs.
+
+All of the tools you need are located in ~/arch3/
+
+Some important configuration files:
+  ~/.youxia/config - This file is your Youxia config file. Youxia is used to provision and tear down VMs.
+  ~/arch3/masterConfig.ini - This file is used by the Coordinator, Reporter, Provisioner, and JobGeneator.
+  ~/params.json - This file is used by the Architecture3 components to launch new VMs and execute workflows on them.
+
+HELP_MESSAGE
+sleep 2
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
