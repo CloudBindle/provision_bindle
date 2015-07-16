@@ -57,15 +57,6 @@ HELP_MESSAGE
   shift
 done
 
-cat <<ARGS_MESSAGE
-Specified arguments are:
-  PEM key:          $PEM_KEY
-  Image version:    $IMAGE_VERSION
-  Host environment: $HOST_ENV
-  Fleet name:       $FLEET_NAME
-  Test mode:        $E2E_TEST
-ARGS_MESSAGE
-
 if [ -z $FLEET_NAME ] ; then
   FLEET_NAME="$( < /dev/urandom tr -dc _A-Z-a-z-0-9 | head -c12 )"
   echo "You did not specify a fleet name, so a random name has been generated for your fleet: ${FLEET_NAME}"
@@ -145,16 +136,25 @@ fi
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
 [[ -f $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME ]] || cp $PEM_KEY $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh/$PEM_KEY_BASENAME
 
+cat <<ARGS_MESSAGE
+Specified arguments are:
+  PEM key:          $PEM_KEY
+  Image version:    $IMAGE_VERSION
+  Host environment: $HOST_ENV
+  Fleet name:       $FLEET_NAME
+  Test mode:        $E2E_TEST
+ARGS_MESSAGE
 # If running the container on a workstation, the Public IP address should be that of the host machine, so this needs to be passed into the container as a variable.
 if [ "$HOST_ENV" = "local" ] ; then
   PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
-  echo $PUBLIC_IP_ADDRESS
   if [ -n $PUBLIC_IP_ADDRESS ] ; then
     PUBLIC_IP_ADDRESS_STR="\n\t-e HOST_PUBLIC_IP_ADDRESS=$PUBLIC_IP_ADDRESS"
+    cat <<ARGS_MESSAGE
+  Host IP address:  $PUBLIC_IP_ADDRESS
+ARGS_MESSAGE
   fi
 fi
-echo ENV IS $HOST_ENV
-echo PUBLIC IP STR $PUBLIC_IP_ADDRESS_STR
+
 DOCKER_CMD=$(cat <<CMD_STR
 docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
