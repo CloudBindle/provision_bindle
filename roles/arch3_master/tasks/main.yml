@@ -164,17 +164,7 @@
   template: src=deployer_params.j2 dest=/home/ubuntu/params.json owner=ubuntu
 
 - name: Install wrapper scripts
-  template: src={{ item }}.j2 dest=/home/ubuntu/arch3/{{ item }}.sh owner=ubuntu mode=u+rwx
-  with_items:
-    - Coordinator
-    - Deployer
-    - Generator
-    - Provisioner
-    - Reaper
-    - ReportBot
-
-- name: Create links to wrapper scripts
-  file: state=link src=/home/ubuntu/arch3/{{ item }}.sh path=/usr/local/sbin/{{ item }} mode=a+rxw 
+  template: src={{ item }}.j2 dest=/usr/local/sbin/{{ item }} owner=ubuntu mode=u+rwx
   with_items:
     - Coordinator
     - Deployer
