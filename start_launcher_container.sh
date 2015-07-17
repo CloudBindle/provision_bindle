@@ -1,9 +1,5 @@
 #! /bin/bash
 
-#PEM_KEY=$1
-#IMAGE_VERSION=$2
-#HOST_ENV=$3
-#E2E_TEST=$4
 RESTART_POLICY="\n\t--restart=always"
 POST_START_CMD=/home/ubuntu/start_services_in_container.sh
 TEST_RESULT_VOLMUE=
@@ -176,9 +172,6 @@ docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
 
 CMD_STR
 )
-
-#DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed s/$/\\\\/g )
-#DOCKER_CMD=$( echo -e "$DOCKER_CMD" | sed '$ s/.$//g' )
 
 echo "The command that will be executed is:"
 
