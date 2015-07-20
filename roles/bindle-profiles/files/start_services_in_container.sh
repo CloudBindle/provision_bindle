@@ -42,6 +42,7 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 # Update the params.json for youxia with the sensu server IP address for sensu and also for queueHost
 sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sed -i.bak 's/\"queueHost\": \"localhost\",/\"queueHost\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
+sed -i.bak 's/\"FLEET_NAME\": \"fleet_name\",/\"FLEET_NAME\": \"'${FLEET_NAME}'\",/g' ~/params.json
 sudo sed -i.bak 's/_*sensu-server_localhost/'${FLEET_NAME}'_sensu-server_'${SENSU_SERVER_IP_ADDRESS}'/g' /etc/sensu/conf.d/client.json
 #Add the fleet name as the "managed tag" and slack namespace
 sed -i.bak 's/managed_tag =.*/managed_tag = '${FLEET_NAME}'/g' ~/.youxia/config
