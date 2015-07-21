@@ -19,17 +19,27 @@ The scripts and files that you will most likely be using or modifying are:
 
  - **start\_launcher\_container.sh** - This is used to start an instance of pancancer\_launcher. The script is called like this:
 
-        bash start_launcher_container.sh ~/.ssh/my_key.pem 3.1.0 AWS true
+        bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.1 -e AWS -t true -f testFleet
 
-  The arguments are:
-  1. The path to a PEM key
-  2. The version of pancancer\_launcher to use.
-  3. The environment ("AWS" or "OPENSTACK") that the launcher is running in.
-  4. Test mode (if true, workers will be launched automatically when the container completes its startup).
+The arguments are:
+
+\-p, --pem_key - The path to the pem key file you want to use to start up new workers.
+
+\-i, --image_version - The version of pancancer_launcher you want to run.
+
+\-e, --host_env - The host environment you are running in (Either "AWS" or "OPENSTACK"). If you do not specify a value, "AWS" will be defaulted.
+
+\-t, --test_mode - Run in test mode (lauches workers immediately when container starts). Defaults to "false"
+
+\-f, --fleet_name - The name of the fleet of workers that will be managed by this launcher. If you do not specify one, a random name will be generated.
+
+--target_env - Only used when running in test mode.
+
+\-h, --help - Prints a help message.
 
   It is also possible to call this in a simpler way by omitting the last two arguments. They will take on the assumed values "AWS" and "false":
   
-      bash start_launcher_container.sh ~/.ssh/my_key.pem 3.1.0
+      bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.1
 
  - **roles/bindle-profiles/files/bashrc** - This is a bashrc file that is set up for the ubuntu use inside the pancancer\_launcher container. It is based on the Ubuntu 14.04 default bashrc file, but has a custom prompt containing the pancancer\_launcher version number.
  - **roles/bindle-profiles/files/launch\_workers.sh** - This is a file that can be used to launcher worker nodes automatically from the pancancer\_launcher container. It is primarily intended to be used from Jenkins or other build/test tools so that a complete end-to-end test can be executed without manual intervention. It is activated by passing the value "true" (to indicate that you want to run in test mode) as the last argument to `start_launcher_container.sh`.
