@@ -4,11 +4,49 @@
   "aws_key": "FOOBAR",
   "aws_secret_key": "FOOBAR",
   "seqware_version": "1.1.1",
-  "workflow_name": "DEWrapper",
-  "workflows": [
-    "Workflow_Bundle_DEWrapperWorkflow_1.0.2_SeqWare_1.1.0",
-    "Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0"
-  ],
+  "workflow_name": "DEWrapper,HelloWorld",
+  "http_workflows": {
+    "DEWrapper": {
+      "name": "Workflow_Bundle_DEWrapperWorkflow_1.0.2_SeqWare_1.1.0",
+      "url": "http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/Workflow_Bundle_DEWrapperWorkflow_1.0.2_SeqWare_1.1.0.zip"
+    },
+    "HelloWorld": {
+      "name": "Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0",
+      "url":"http://s3.amazonaws.com/oicr.workflow.bundles/released-bundles/Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0.zip"
+    }
+  },
+  "s3_workflows": {
+    "S3Workflow": {
+      "name":"Workflow_Bundle_OnlyAvailableFromS3_1.0_SeqWare_1.1.0",
+      "url":"s3://some.private.bucket/Workflow_Bundle_OnlyAvailableFromS3_1.0_SeqWare_1.1.0.zip"
+    }
+  },
+  "containers": {
+    "seqware_whitestar": {
+      "name": "seqware_whitestar",
+      "image_name": "seqware/seqware_whitestar:{{ seqware_version }}"
+    },
+    "pcawg-delly-workflow": {
+      "name":"pcawg-delly-workflow",
+      "image_name": "pancancer/pcawg-delly-workflow:1.0"
+    },
+    "pancancer_upload_download": {
+      "name": "pancancer_upload_download",
+      "image_name": "pancancer/pancancer_upload_download:1.1"
+    }
+  },
+  "s3_containers": {
+    "dkfz_dockered_workflows": {
+      "name": "dkfz_dockered_workflows_1.0.132-2",
+      "url": "s3://oicr.docker.private.images/dkfz_dockered_workflows_1.0.132-2.zip"
+    }
+  },
+  "http_containers": {
+    "some_other_container": {
+      "name":"some_other_container",
+      "url":"http://www.some-other-organization.com/some_other_container.tar"
+    }
+  },
   "install_workflow": "true",
   "test_workflows": "true",
   "queueHost": "{{ queueHost }}",
