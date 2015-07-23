@@ -122,10 +122,10 @@ fi
 [[ -d "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_config" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_config"
 
 # create the ~/.aws folder, if it doesn't already exist
-[[ -d "$MOUNTED_VOLUME_PREFIX/.aws/"]] || mkdir "$MOUNTED_VOLUME_PREFIX/.aws"
+[[ -d "$MOUNTED_VOLUME_PREFIX/.aws" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/.aws"
 
 # Create the ~/.gnos folder if it is not there
-[[ -d "$MOUNTED_VOLUME_PREFIX/.gnos/" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/.gnos"
+[[ -d "$MOUNTED_VOLUME_PREFIX/.gnos" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/.gnos"
 
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
