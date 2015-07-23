@@ -1,0 +1,7 @@
+#! /bin/bash
+
+echo RabbitMQ stats:
+echo "vhosts: " && rabbitmqadmin list vhosts
+echo "users: " &&  rabbitmqadmin list users
+echo "exchanges: " && rabbitmqadmin list exchanges
+echo "queues: " &&  rabbitmqadmin list queues vhost name node messages
