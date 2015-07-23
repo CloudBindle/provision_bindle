@@ -94,10 +94,12 @@ Some important configuration files:
 
 Important Architecture3 commands:
 
-  Generator - Generate jobs.
   Coordinator - Coordinate provisioning of VMs and jobs.
+  Deployer - Can be used to manually deploy a worker node.
+  Generator - Generate jobs.
   Provisioner - Provision VMs to execute jobs.
   QueueStats - Simple queue stats, from RabbitMQ.
+  Reaper - Can be used to shut down worker nodes.
   Reporter - Report on work being done.
 
 HELP_MESSAGE
