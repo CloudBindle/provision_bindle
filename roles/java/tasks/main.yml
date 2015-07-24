@@ -6,3 +6,5 @@
 - include: 'openjdk7.yml'
   when: java_provider == "OpenJDK7"
 
+- include: 'oracle8.yml'
+  when: java_provider == "Oracle8"
