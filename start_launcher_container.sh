@@ -6,7 +6,7 @@ TEST_RESULT_VOLMUE=
 INTERACTIVE=" -i "
 MOUNTED_VOLUME_PREFIX="/home/$USER"
 
-
+set -e
 while [[ $# > 0 ]] ; do
   key="$1"
   case $key in
@@ -91,13 +91,13 @@ if [[ ! $ENVS =~ .*"${HOST_ENV}".* ]] ; then
 fi
 
 # If the user is requesting an end-to-end integration test, there's some additional setup work.
-if [[ -n $E2E_TEST && $E2E_TEST == 'true' ]] ; then
+if [[ -n $E2E_TEST && "$E2E_TEST" = "true" ]] ; then
   # e2e test should not restart, it could break automation.
   RESTART_POLICY=
   INTERACTIVE=
   MOUNTED_VOLUME_PREFIX=$PWD
   # user *must* specify if they want to test against AWS or OpenStack, if they are running the launcher in a local context (i.e. their personal workstation)
-  if [ $HOST_ENV == 'local' ] ; then
+  if [ "$HOST_ENV" = "local" ] ; then
     if [ -z $TARGET_ENV ] ; then
       echo "If you are running your container locally (not in a cloud environment), you MUST specify a worker type as \"--target_env ENV\" for this script (either \"aws\" or \"openstack\")."
       exit 1
@@ -115,18 +115,17 @@ else
   POST_START_CMD="$POST_START_CMD"
 fi
 
-
 # Create a folder that will be mounted into the docker container
-[[ -d $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh ]] || mkdir $MOUNTED_VOUME_PREFIX/pancancer_launcher_ssh
+[[ -d "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh"
 
 # Create a config folder if there isn't one already.
-[[ -d $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config ]] || mkdir $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config
+[[ -d "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_config" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/pancancer_launcher_config"
 
 # create the ~/.aws folder, if it doesn't already exist
-[[ -d $MOUNTED_VOLUME_PREFIX/.aws/ ]] || mkdir $MOUNTED_VOLUME_PREFIX/.aws
+[[ -d "$MOUNTED_VOLUME_PREFIX/.aws" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/.aws"
 
 # Create the ~/.gnos folder if it is not there
-[[ -d $MOUNTED_VOLUME_PREFIX/.gnos/ ]] || mkdir $MOUNTED_VOLUME_PREFIX/.gnos
+[[ -d "$MOUNTED_VOLUME_PREFIX/.gnos" ]] || mkdir "$MOUNTED_VOLUME_PREFIX/.gnos"
 
 # Copy the pem file in $1 to the folder for the container.
 PEM_KEY_BASENAME=$(basename $PEM_KEY)
@@ -176,5 +175,5 @@ CMD_STR
 echo "The command that will be executed is:"
 
 echo -e "$DOCKER_CMD"
-
+set +e
 $(echo -e "$DOCKER_CMD")

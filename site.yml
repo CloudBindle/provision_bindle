@@ -9,7 +9,7 @@
 - hosts: bindle 
   sudo: True
   roles:
-    - { role: java, java_provider: Cloudera }
+    - { role: java, java_provider: Oracle8 }
 
 
 # Set up the architecture3 Master components locally, if *this* node is to be the Master.

@@ -1,5 +1,16 @@
 #! /bin/bash
 
+cat <<INTRO_MESSAGE
+
+
+*****************************
+* Now running inside        *
+* the pancancer_launcher... *
+*****************************
+
+
+INTRO_MESSAGE
+
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
 cp $PATH_TO_PEM ~/.ssh/
@@ -43,7 +54,7 @@ echo "Sensu server IP addrss: $SENSU_SERVER_IP_ADDRESS"
 sed -i.bak 's/\"SENSU_SERVER_IP_ADDRESS\": \"localhost\",/\"SENSU_SERVER_IP_ADDRESS\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sed -i.bak 's/\"queueHost\": \"localhost\",/\"queueHost\": \"'${SENSU_SERVER_IP_ADDRESS}'\",/g' ~/params.json
 sed -i.bak 's/\"FLEET_NAME\": \"fleet_name\",/\"FLEET_NAME\": \"'${FLEET_NAME}'\",/g' ~/params.json
-sudo sed -i.bak 's/_*sensu-server_localhost/'${FLEET_NAME}'_sensu-server_'${SENSU_SERVER_IP_ADDRESS}'/g' /etc/sensu/conf.d/client.json
+sudo sed -i.bak 's/\"name\":.*sensu-server.*/\"name\":\"'${FLEET_NAME}'_sensu-server\",/g' /etc/sensu/conf.d/client.json
 #Add the fleet name as the "managed tag" and slack namespace
 sed -i.bak 's/managed_tag =.*/managed_tag = '${FLEET_NAME}'/g' ~/.youxia/config
 
@@ -68,14 +79,7 @@ sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
 
-echo RabbitMQ stats:
-echo "vhosts: " && rabbitmqadmin list vhosts
-echo "users: " &&  rabbitmqadmin list users
-echo "exchanges: " && rabbitmqadmin list exchanges
-echo "queues: " &&  rabbitmqadmin list queues vhost name node messages
-
 cat <<HELP_MESSAGE
-
 
 **************************************
 * Welcome to the Pancancer Launcher! *
@@ -83,12 +87,20 @@ cat <<HELP_MESSAGE
 
 This docker container can be used to launch and control pancancer worker VMs.
 
-All of the tools you need are located in ~/arch3/
-
 Some important configuration files:
   ~/.youxia/config - This file is your Youxia config file. Youxia is used to provision and tear down VMs.
   ~/arch3/masterConfig.ini - This file is used by the Coordinator, Reporter, Provisioner, and JobGeneator.
   ~/params.json - This file is used by the Architecture3 components to launch new VMs and execute workflows on them.
+
+Important Architecture3 commands:
+
+  Coordinator - Coordinate provisioning of VMs and jobs.
+  Deployer - Can be used to manually deploy a worker node.
+  Generator - Generate jobs.
+  Provisioner - Provision VMs to execute jobs.
+  QueueStats - Simple queue stats, from RabbitMQ.
+  Reaper - Can be used to shut down worker nodes.
+  Reporter - Report on work being done.
 
 HELP_MESSAGE
 sleep 2
