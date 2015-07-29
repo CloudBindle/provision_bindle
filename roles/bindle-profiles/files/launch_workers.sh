@@ -19,7 +19,7 @@ if [ "$WORKER_TYPE" == "openstack" ] ; then
 fi
 
 # Deploying a new worker can also cause them to self-test installed workflows.
-java -cp pancancer.jar io.cloudbindle.youxia.deployer.Deployer --ansible-playbook ~/architecture-setup/container-host-bag/install.yml --max-spot-price 1 --batch-size 1 --total-nodes-num 1 -e ~/params.json $OS_FLAG
+#java -cp pancancer.jar io.cloudbindle.youxia.deployer.Deployer --ansible-playbook ~/architecture-setup/container-host-bag/install.yml --max-spot-price 1 --batch-size 1 --total-nodes-num 1 -e ~/params.json $OS_FLAG
 
 # TODO: start up a job queue and send >= 1 job to the new worker.
 
@@ -27,4 +27,15 @@ java -cp pancancer.jar io.cloudbindle.youxia.deployer.Deployer --ansible-playboo
 #${3-bash}
 
 #Now clean up the nodes we created.
-java -cp pancancer.jar io.cloudbindle.youxia.reaper.Reaper --kill-limit 0 $OS_FLAG
+# java -cp pancancer.jar io.cloudbindle.youxia.reaper.Reaper --kill-limit 0 $OS_FLAG
+
+# run the Generator
+Generator --workflow-name HelloWorld --workflow-version 1.0-SNAPSHOT --workflow-path /workflows/Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0 --config ~/arch3/config/masterConfig.ini --total-jobs 1
+
+#Run the Coordinator
+Coordinator --config config/masterConfig.ini $OS_FLAG
+
+#Run the Provisioner
+Provisioner --config config/masterConfig.ini $OS_FLAG
+
+#Worker should be reaped automatically if it completes successfuly
