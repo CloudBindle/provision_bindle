@@ -33,9 +33,9 @@ fi
 Generator --workflow-name HelloWorld --workflow-version 1.0-SNAPSHOT --workflow-path /workflows/Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0 --config ~/arch3/config/masterConfig.ini --total-jobs 1
 
 #Run the Coordinator
-Coordinator --config config/masterConfig.ini $OS_FLAG
+Coordinator --config config/masterConfig.ini
 
 #Run the Provisioner
-Provisioner --config config/masterConfig.ini $OS_FLAG
+Provisioner --config config/masterConfig.ini
 
 #Worker should be reaped automatically if it completes successfuly
