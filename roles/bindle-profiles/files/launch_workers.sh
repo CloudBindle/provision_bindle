@@ -22,15 +22,18 @@ fi
 
 # run the Generator
 sleep 60
+echo "Running Generator"
 Generator --workflow-name HelloWorld --workflow-version 1.0-SNAPSHOT --workflow-path /workflows/Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0 --config ~/arch3/config/masterConfig.ini --total-jobs 1
 
 #Run the Coordinator
 sleep 60
+echo "Running Coordinator"
 Coordinator --config config/masterConfig.ini
 cat coordinator.out
 
 #Run the Provisioner
 sleep 60
+echo "Running Provisioner"
 Provisioner --config config/masterConfig.ini
 cat provisioner.out
 
