@@ -3,7 +3,7 @@
 - name: Install wget
   apt: name=wget
 
-- name: Create arch3 dir
+- name: Create arch3 dirs in /home/ubuntu
   file: name=/home/ubuntu/{{ item }} state=directory owner=ubuntu
   with_items:
     - arch3
@@ -11,6 +11,14 @@
     - arch3/bin
     - arch3/config
     - .youxia
+
+- name: create /etc/arch3/ for config
+  sudo: true
+  file: name=/etc/arch3 state=directory
+
+- name: create /var/log/arch3/ for logging
+  sudo: true
+  file: name=/var/log/arch3/ state=directory
 
 #######################
 # RabbitMQ
@@ -166,13 +174,17 @@
 - name: Install wrapper scripts
   template: src={{ item }}.j2 dest=/usr/local/sbin/{{ item }} owner=ubuntu mode=u+rwx
   with_items:
-    - Coordinator
     - Deployer
     - Generator
     - Provisioner
     - Reaper
     - ReportBot
     - QueueStats
+
+- name: Install Arch3 services
+  template: src={{ item }}.j2 dest=/etc/init.d/{{ item }}
+  with_items:
+    - Coordinator
 
 - name: Get Arch3 cleanup script
   get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/{{ pancancer_arch3_version }}/pancancer-arch-3/scripts/cleanup.sh dest=/home/ubuntu/arch3/bin/cleanup.sh
