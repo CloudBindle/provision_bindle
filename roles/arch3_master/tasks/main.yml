@@ -163,7 +163,10 @@
   file: path=/home/ubuntu/arch3/reporting.jar src=/home/ubuntu/arch3/bin/pancancer-reporting-{{ pancancer_arch3_version }}.jar state=link
 
 - name: Template masterConfig
-  template: src=masterConfig.j2 dest=/home/ubuntu/arch3/config/masterConfig.ini owner=ubuntu
+  template: src=masterConfig.j2 dest=/etc/arch3/masterConfig.ini owner=ubuntu
+
+- name: Symlink to masterConfig
+  file: path=/home/ubuntu/arch3/config/masterConfig.ini src=/etc/arch3/masterConfig.ini state=link
 
 - name: Template youxiaConfig
   template: src=youxiaConfig.j2 dest=/home/ubuntu/.youxia/config owner=ubuntu
@@ -176,15 +179,15 @@
   with_items:
     - Deployer
     - Generator
-    - Provisioner
     - Reaper
-    - ReportBot
     - QueueStats
 
 - name: Install Arch3 services
-  template: src={{ item }}.j2 dest=/etc/init.d/{{ item }}
+  template: src={{ item }}.j2 dest=/etc/init.d/{{ item }} mode=a+x
   with_items:
     - Coordinator
+    - Provisioner
+    - ReportBot
 
 - name: Get Arch3 cleanup script
   get_url: url=https://raw.githubusercontent.com/CancerCollaboratory/sandbox/{{ pancancer_arch3_version }}/pancancer-arch-3/scripts/cleanup.sh dest=/home/ubuntu/arch3/bin/cleanup.sh
