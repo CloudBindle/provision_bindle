@@ -1,24 +1,52 @@
 #! /bin/bash
 LOG_FILE=/var/log/arch3/coordinator.log
 PID_FILE=/var/run/arch3_coordinator.pid
+CLASS_NAME=info.pancancer.arch3.coordinator.Coordinator
+JAR_FILE=/home/ubuntu/arch3/pancancer.jar
+CONFIG_PATH=/etc/arch3/masterConfig.ini
 
 case "$1" in
   start)
       echo "Starting up Coordinator..."
-      start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.coordinator.Coordinator --endless --config /etc/arch3/masterConfig.ini
+      sudo start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+      cat $PID_FILE
     ;;
   stop)
      echo "Stopping Coordinator..."
-     start-stop-daemon --stop --signal KILL --pidfile $PID_FILE --exec /usr/bin/java -- -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.coordinator.Coordinator --endless --config /etc/arch3/masterConfig.ini
+     set -e
+     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     sudo rm -f $PID_FILE
+     set +e
     ;;
   status)
-    start-stop-daemon --status --pidfile /var/run/arch3_coordinator.pid
-    echo $?
+    sudo start-stop-daemon --status --pidfile $PID_FILE
+    PROC_STATUS=$?
+    echo "Status code: $PROC_STATUS"
+    case "$PROC_STATUS" in
+      0)
+        echo "Coordinator is running, with PID: $(cat $PID_FILE)"
+        ;;
+      1)
+        echo "Coordinator is not running, but PID file may exist: $PID_FILE"
+        cat $PID_FILE
+        ;;
+      3)
+        echo "Coordinator is not running."
+        ;;
+      4)
+        echo "Unable to determine status of Coordinator!"
+        ;;
+    esac
+    exit $PROC_STATUS
     ;;
   restart)
      echo "Restarting Coordinator..."
-     start-stop-daemon --stop --signal KILL --pidfile $PID_FILE --exec /usr/bin/java -- -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.coordinator.Coordinator --endless --config /etc/arch3/masterConfig.ini
-     start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.coordinator.Coordinator --endless --config /etc/arch3/masterConfig.ini
+     set -e
+     sudo start-stop-daemon --stop --signal KILL --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     sudo rm -f $PID_FILE
+     sudo start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     set +e
+     cat $PID_FILE
     ;;
   *)
     echo $"Usage: $0 {start|stop|status|restart}"
