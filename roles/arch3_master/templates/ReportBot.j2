@@ -5,19 +5,25 @@ SERVICE_NAME=ReportBot
 LOG_FILE="/var/log/arch3/$SERVICE_NAME.log"
 PID_FILE="/var/run/arch3_$SERVICE_NAME.pid"
 CLASS_NAME=info.pancancer.arch3.reportbot.SlackReportBot
-JAR_FILE=/home/ubuntu/arch3/pancancer.jar
+JAR_FILE=/home/ubuntu/arch3/reporting.jar
 CONFIG_PATH=/etc/arch3/masterConfig.ini
+CMD_ARGS="-DFULL_LOGGING_PATH=$LOG_FILE -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH"
+CMD="/usr/bin/java"
 
 case "$1" in
   start)
       echo "Starting up $SERVICE_NAME..."
-      sudo start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+      set -e
+      sudo touch $LOG_FILE
+      sudo chmod a+rw $LOG_FILE
+      sudo start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
+      set +e
       cat $PID_FILE
     ;;
   stop)
      echo "Stopping $SERVICE_NAME..."
      set -e
-     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
      sudo rm -f $PID_FILE
      set +e
     ;;
@@ -45,9 +51,9 @@ case "$1" in
   restart)
      echo "Restarting $SERVICE_NAME..."
      set -e
-     sudo start-stop-daemon --stop --signal KILL --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
      sudo rm -f $PID_FILE
-     sudo start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
+     sudo start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
      set +e
      cat $PID_FILE
     ;;
