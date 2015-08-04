@@ -1,18 +1,19 @@
 #! /bin/bash
-LOG_FILE=/var/log/arch3/coordinator.log
-PID_FILE=/var/run/arch3_coordinator.pid
+SERVICE_NAME=Coordinator
+LOG_FILE="/var/log/arch3/$SERVICE_NAME.log"
+PID_FILE="/var/run/arch3_$SERVICE_NAME.pid"
 CLASS_NAME=info.pancancer.arch3.coordinator.Coordinator
 JAR_FILE=/home/ubuntu/arch3/pancancer.jar
 CONFIG_PATH=/etc/arch3/masterConfig.ini
 
 case "$1" in
   start)
-      echo "Starting up Coordinator..."
+      echo "Starting up $SERVICE_NAME..."
       sudo start-stop-daemon --start -b -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
       cat $PID_FILE
     ;;
   stop)
-     echo "Stopping Coordinator..."
+     echo "Stopping $SERVICE_NAME..."
      set -e
      sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
      sudo rm -f $PID_FILE
@@ -24,23 +25,23 @@ case "$1" in
     echo "Status code: $PROC_STATUS"
     case "$PROC_STATUS" in
       0)
-        echo "Coordinator is running, with PID: $(cat $PID_FILE)"
+        echo "$SERVICE_NAME is running, with PID: $(cat $PID_FILE)"
         ;;
       1)
-        echo "Coordinator is not running, but PID file may exist: $PID_FILE"
+        echo "$SERVICE_NAME is not running, but PID file may exist: $PID_FILE"
         cat $PID_FILE
         ;;
       3)
-        echo "Coordinator is not running."
+        echo "$SERVICE_NAME is not running."
         ;;
       4)
-        echo "Unable to determine status of Coordinator!"
+        echo "Unable to determine status of $SERVICE_NAME!"
         ;;
     esac
     exit $PROC_STATUS
     ;;
   restart)
-     echo "Restarting Coordinator..."
+     echo "Restarting $SERVICE_NAME..."
      set -e
      sudo start-stop-daemon --stop --signal KILL --pidfile $PID_FILE --exec /usr/bin/java -- -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH
      sudo rm -f $PID_FILE
