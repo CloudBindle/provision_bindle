@@ -7,21 +7,26 @@ JAR_FILE=/home/ubuntu/arch3/pancancer.jar
 CONFIG_PATH=/etc/arch3/masterConfig.ini
 CMD_ARGS="-DFULL_LOGGING_PATH=$LOG_FILE -cp $JAR_FILE $CLASS_NAME --endless --config $CONFIG_PATH"
 CMD="/usr/bin/java"
+ARCH3_USER=ubuntu
 
 case "$1" in
   start)
       echo "Starting up $SERVICE_NAME..."
       set -e
+      #The log file and pid file need to exist and be accessible to the ubuntu user, or the java process will fail.
       sudo touch $LOG_FILE
       sudo chmod a+rw $LOG_FILE
-      sudo start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS # >> $LOG_FILE 2>&1
+      sudo touch $PID_FILE
+      sudo chown ubuntu $PID_FILE
+
+      start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --chuid $ARCH3_USER --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
       set +e
       cat $PID_FILE
     ;;
   stop)
      echo "Stopping $SERVICE_NAME..."
      set -e
-     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS
+     sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
      sudo rm -f $PID_FILE
      set +e
     ;;
@@ -44,14 +49,16 @@ case "$1" in
         echo "Unable to determine status of $SERVICE_NAME!"
         ;;
     esac
+    #use the result from `start-stop-daemon --status` as the exit code, after printing the status message.
     exit $PROC_STATUS
     ;;
   restart)
      echo "Restarting $SERVICE_NAME..."
      set -e
      sudo start-stop-daemon --stop --signal KILL -m --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
+     #start-stop-daemon does not clean up the pid file so we need to do that here.
      sudo rm -f $PID_FILE
-     sudo start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
+     start-stop-daemon --start -b -m --no-close --pidfile $PID_FILE --chuid $ARCH3_USER --exec $CMD -- $CMD_ARGS >> $LOG_FILE 2>&1
      set +e
      cat $PID_FILE
     ;;
