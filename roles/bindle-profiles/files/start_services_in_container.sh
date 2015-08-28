@@ -87,20 +87,9 @@ cat <<HELP_MESSAGE
 
 This docker container can be used to launch and control pancancer worker VMs.
 
-Some important configuration files:
-  ~/.youxia/config - This file is your Youxia config file. Youxia is used to provision and tear down VMs.
-  ~/arch3/masterConfig.ini - This file is used by the Coordinator, Reporter, Provisioner, and JobGeneator.
-  ~/params.json - This file is used by the Architecture3 components to launch new VMs and execute workflows on them.
+The main command to interface with the pancancer components is "pancancer".
 
-Important Architecture3 commands:
-
-  Coordinator - Coordinate provisioning of VMs and jobs.
-  Deployer - Can be used to manually deploy a worker node.
-  Generator - Generate jobs.
-  Provisioner - Provision VMs to execute jobs.
-  QueueStats - Simple queue stats, from RabbitMQ.
-  Reaper - Can be used to shut down worker nodes.
-  Reporter - Report on work being done.
+Use the command "pancancer -h" to get details on various pancancer commands.
 
 HELP_MESSAGE
 sleep 2
