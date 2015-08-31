@@ -18,13 +18,23 @@ if [ "$WORKER_TYPE" == "openstack" ] ; then
   OS_FLAG=" --openstack"
 fi
 
-# Deploying a new worker can also cause them to self-test installed workflows.
-java -cp pancancer.jar io.cloudbindle.youxia.deployer.Deployer --ansible-playbook ~/architecture-setup/container-host-bag/install.yml --max-spot-price 1 --batch-size 1 --total-nodes-num 1 -e ~/params.json $OS_FLAG
+# Each command is preceeded by a sleep because it seems that the database might not have finished starting by the time these commands are executed.
 
-# TODO: start up a job queue and send >= 1 job to the new worker.
+# run the Generator
+sleep 60
+echo "Running Generator"
+Generator --workflow-name HelloWorld --workflow-version 1.0-SNAPSHOT --workflow-path /workflows/Workflow_Bundle_HelloWorld_1.0-SNAPSHOT_SeqWare_1.1.0 --config ~/arch3/config/masterConfig.ini --total-jobs 1
 
-# Execute the argument passed in from the Dockerfile
-#${3-bash}
+#Run the Coordinator
+sleep 60
+echo "Running Coordinator"
+Coordinator --config config/masterConfig.ini
+cat coordinator.out
 
-#Now clean up the nodes we created.
-java -cp pancancer.jar io.cloudbindle.youxia.reaper.Reaper --kill-limit 0 $OS_FLAG
+#Run the Provisioner
+sleep 60
+echo "Running Provisioner"
+Provisioner --config config/masterConfig.ini
+cat provisioner.out
+
+#Worker should be reaped automatically if it completes successfuly
