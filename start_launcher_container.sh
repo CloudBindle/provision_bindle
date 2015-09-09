@@ -157,6 +157,7 @@ if [ "$HOST_ENV" = "AWS" ] ; then
     cat <<ARGS_MESSAGE
   Instnance ID:  $INSTANCE_ID
 ARGS_MESSAGE
+  fi
 fi
 
 DOCKER_CMD=$(cat <<CMD_STR
