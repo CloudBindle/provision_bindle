@@ -34,7 +34,7 @@
   copy: src=roles/bindle-profiles/files/bashrc dest=/home/ubuntu/.bashrc owner=ubuntu
 
 - name: Copy over service startup scripts
-  copy: src=roles/bindle-profiles/files/{{ item }}.sh dest=/home/ubuntu/{{ item }}.sh owner=ubuntu mode="a+x"
+  copy: src={{ item }}.sh dest=/home/ubuntu/{{ item }}.sh owner=ubuntu mode="a+x"
   with_items:
     - start_services_in_container.sh
     - update_security_groups.sh
