@@ -37,7 +37,7 @@
   copy: src={{ item }} dest=/home/ubuntu/{{ item }} owner=ubuntu mode="a+x"
   with_items:
     - start_services_in_container.sh
-    - update_security_groups.sh
+    - update_security_groups.py
 
 - name: Copy over script that starts up workers (used for e2e integration testing)
   copy: src=roles/bindle-profiles/files/launch_workers.sh dest=/home/ubuntu/launch_workers.sh owner=ubuntu mode="a+x"
