@@ -160,7 +160,7 @@ ARGS_MESSAGE
 fi
 
 DOCKER_CMD=$(cat <<CMD_STR
-docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
+sudo docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh:/opt/from_host/ssh:ro
         -v $MOUNTED_VOLUME_PREFIX/.aws/:/opt/from_host/aws:ro
