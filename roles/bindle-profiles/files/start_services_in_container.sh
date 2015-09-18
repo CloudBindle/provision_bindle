@@ -85,8 +85,11 @@ sudo service postgresql start
 sudo service uchiwa start
 
 # Coordinator and Provisioner should already be running with the user logs in.
+# But the system needs final configuration before starting the services.
+pancancer sysconfig
 pancancer coordinator start
-pancancer provisioner start
+# Maybe the Provisioner shouldn't be started until *after* the the first INI files have been generated and the job orders enqeueued...
+#pancancer provisioner start
 
 echo  "[END: $(date +%Y-%m-%d_%H:%M:%S)]"
 exec 1>&3 2>&4
