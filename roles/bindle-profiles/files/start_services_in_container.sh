@@ -84,8 +84,7 @@ sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
 
-#TODO: Start Coordinator and Provisioner, update security group settings.
-
+# Coordinator and Provisioner should already be running with the user logs in.
 pancancer coordinator start
 pancancer provisioner start
 
