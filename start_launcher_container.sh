@@ -149,14 +149,24 @@ if [ "$HOST_ENV" = "local" ] ; then
 ARGS_MESSAGE
   fi
 fi
+# Some additional parameters needs to be passed in on AWS for security group updates
+if [ "$HOST_ENV" = "AWS" ] ; then
+  INSTANCE_ID=$(curl http://169.254.169.254/latest/meta-data/instance-id)
+  if [ -n $INSTANCE_ID ] ; then
+    INSTANCE_ID_STR="\n\t-e HOST_INSTANCE_ID=$INSTANCE_ID"
+    cat <<ARGS_MESSAGE
+  Instnance ID:  $INSTANCE_ID
+ARGS_MESSAGE
+  fi
+fi
 
 DOCKER_CMD=$(cat <<CMD_STR
-docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
+sudo docker run $INTERACTIVE -t -P --privileged=true --name pancancer_launcher
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_config:/opt/from_host/config:rw
         -v $MOUNTED_VOLUME_PREFIX/pancancer_launcher_ssh:/opt/from_host/ssh:ro
         -v $MOUNTED_VOLUME_PREFIX/.aws/:/opt/from_host/aws:ro
         -v $MOUNTED_VOLUME_PREFIX/.gnos/:/opt/from_host/gnos:ro
-        -v /etc/localtime:/etc/localtime:ro $TEST_RESULT_VOLUME $PUBLIC_IP_ADDRESS_STR $RESTART_POLICY
+        -v /etc/localtime:/etc/localtime:ro $TEST_RESULT_VOLUME $PUBLIC_IP_ADDRESS_STR $INSTANCE_ID_STR $RESTART_POLICY
         -p 15672:15672
         -p 5671:5671
         -p 5672:5672

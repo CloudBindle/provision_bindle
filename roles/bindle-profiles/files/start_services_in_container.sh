@@ -8,8 +8,12 @@ cat <<INTRO_MESSAGE
 * the pancancer_launcher... *
 *****************************
 
+Setting up. This may take a few moments...
 
 INTRO_MESSAGE
+
+exec 3>&1 4>&2 1>>~/startup.log 2>&1
+echo -e "\n\n[BEGIN: $(date +%Y-%m-%d_%H:%M:%S)]"
 
 # Copy pem keys and other config files from the host.
 echo "Copying $PATH_TO_PEM to ~/.ssh/"
@@ -29,6 +33,7 @@ if [ "$HOST_ENV" == "AWS" ] ; then
   echo "Querying AWS for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
+  python ~/update_security_groups.py $HOST_INSTANCE_ID $PUBLIC_IP_ADDRESS
 elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
@@ -79,6 +84,13 @@ sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
 
+# Coordinator and Provisioner should already be running with the user logs in.
+pancancer coordinator start
+pancancer provisioner start
+
+echo  "[END: $(date +%Y-%m-%d_%H:%M:%S)]"
+exec 1>&3 2>&4
+
 cat <<HELP_MESSAGE
 
 **************************************
@@ -87,20 +99,9 @@ cat <<HELP_MESSAGE
 
 This docker container can be used to launch and control pancancer worker VMs.
 
-Some important configuration files:
-  ~/.youxia/config - This file is your Youxia config file. Youxia is used to provision and tear down VMs.
-  ~/arch3/masterConfig.ini - This file is used by the Coordinator, Reporter, Provisioner, and JobGeneator.
-  ~/params.json - This file is used by the Architecture3 components to launch new VMs and execute workflows on them.
+The main command to interface with the pancancer components is "pancancer".
 
-Important Architecture3 commands:
-
-  Coordinator - Coordinate provisioning of VMs and jobs.
-  Deployer - Can be used to manually deploy a worker node.
-  Generator - Generate jobs.
-  Provisioner - Provision VMs to execute jobs.
-  QueueStats - Simple queue stats, from RabbitMQ.
-  Reaper - Can be used to shut down worker nodes.
-  Reporter - Report on work being done.
+Use the command "pancancer -h" to get details on various pancancer commands.
 
 HELP_MESSAGE
 sleep 2
