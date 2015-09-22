@@ -84,15 +84,15 @@ sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
 
+echo  "[END: $(date +%Y-%m-%d_%H:%M:%S)]"
+exec 1>&3 2>&4
+
 # Coordinator and Provisioner should already be running with the user logs in.
 # But the system needs final configuration before starting the services.
 pancancer sysconfig
 pancancer coordinator start
 # Maybe the Provisioner shouldn't be started until *after* the the first INI files have been generated and the job orders enqeueued...
 #pancancer provisioner start
-
-echo  "[END: $(date +%Y-%m-%d_%H:%M:%S)]"
-exec 1>&3 2>&4
 
 cat <<HELP_MESSAGE
 
