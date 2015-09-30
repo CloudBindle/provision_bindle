@@ -3,18 +3,18 @@ sensu_username = admin
 sensu_password = seqware
 sensu_ip_address = {{ queueHost }}
 sensu_port = 4567
-managed_tag = pipboy 
-slack_webhook = <slack RSS handler> 
+managed_tag = pipboy
+#slack_webhook = <slack RSS handler> 
 
 # aws settings
 aws_ssh_key = <path to ssh key>
 aws_key_name = <key name on Amazon>
-region = eu-west-1 
+region = eu-west-1
 # to specify multiple zones, use a comma-separated list
 # we will target the zone with the cheapest spot price first
 zone = eu-west-1a
 # openstack settings
-openstack_username = <tenant>:<username> 
+openstack_username = <tenant>:<username>
 openstack_password = <password>
 openstack_endpoint = http://<fill me in>:5000/v2.0
 openstack_key_name = <key name on OpenStack>
@@ -32,7 +32,7 @@ disable_sensu_server = true
 
 [deployer_openstack]
 flavor = m1.tiny
-min_cores = 4 
+min_cores = 4
 min_ram = 16384
 image_id = <image id>
 security_group = default
@@ -48,6 +48,6 @@ rest_root = SeqWareWebService
 [generator]
 max_scheduled_workflows = 1
 max_workflows = 1
-workflow_accession = 1 
-workflow_name = HelloWorld 
+workflow_accession = 1
+workflow_name = HelloWorld
 workflow_version = 1.0-SNAPSHOT
