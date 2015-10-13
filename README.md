@@ -19,7 +19,7 @@ The scripts and files that you will most likely be using or modifying are:
 
  - **start\_launcher\_container.sh** - This is used to start an instance of pancancer\_launcher. The script is called like this:
 
-        bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.1 -e AWS -t true -f testFleet
+        bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.6 -e AWS -t true -f testFleet
 
 The arguments are:
 
@@ -37,9 +37,9 @@ The arguments are:
 
 \-h, --help - Prints a help message.
 
-  It is also possible to call this in a simpler way by omitting the last two arguments. They will take on the assumed values "AWS" and "false":
-  
-      bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.1
+  It is also possible to call this in a simpler way by omitting the last three arguments. They will take on the assumed values "false" and "AWS", and the fleet name will be a randomly generated string:
+
+      bash start_launcher_container.sh -p ~/.ssh/my_key.pem -i 3.1.6
 
  - **roles/bindle-profiles/files/bashrc** - This is a bashrc file that is set up for the ubuntu use inside the pancancer\_launcher container. It is based on the Ubuntu 14.04 default bashrc file, but has a custom prompt containing the pancancer\_launcher version number.
  - **roles/bindle-profiles/files/launch\_workers.sh** - This is a file that can be used to launcher worker nodes automatically from the pancancer\_launcher container. It is primarily intended to be used from Jenkins or other build/test tools so that a complete end-to-end test can be executed without manual intervention. It is activated by passing the value "true" (to indicate that you want to run in test mode) as the last argument to `start_launcher_container.sh`.
