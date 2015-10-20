@@ -34,12 +34,14 @@ if [ "$HOST_ENV" == "AWS" ] ; then
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   python ~/update_security_groups.py $HOST_INSTANCE_ID $PUBLIC_IP_ADDRESS
-elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
+elif [ "$HOST_ENV" == "OpenStack" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   # TODO: OpenStack could potential use a mounted drive for metadata instead of a service running at an IP address.
+# elif [ "$HOST_ENV" == "Azure" ] ; then
+# TODO: ...fill in the details for Azure
 else
 #if [ -z $IP_ADDRESS] ; then
   # Used when running the container on a workstation, not in a cloud.

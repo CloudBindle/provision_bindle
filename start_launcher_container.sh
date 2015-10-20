@@ -41,7 +41,7 @@ This script will start up pancancer_launcher.
 Options are:
   -p, --pem_key - The path to the pem key file you want to use to start up new workers.
   -i, --image_version - The version of pancancer_launcher you want to run.
-  -e, --host_env - The host environment you are running in (Either "AWS" or "OPENSTACK"). If you do not specify a value, "AWS" will be defaulted.
+  -e, --host_env - The host environment you are running in (Either "AWS", "OpenStack", or "Azure"). If you do not specify a value, "AWS" will be defaulted.
   -t, --test_mode - Run in test mode (lauches workers immediately when container starts). Defaults to "false"
   -f, --fleet_name - The name of the fleet of workers that will be managed by this launcher. If you do not specify one, a random name will be generated.
   --target_env - Only used when running in test mode.
@@ -82,11 +82,11 @@ fi
 
 WORKER_NAME=e2e_test_node
 
-ENVS="OPENSTACK AWS local"
+ENVS="OpenStack AWS Azure local"
 
 # There are three options for environment: AWS, OPENSTACK, local
 if [[ ! $ENVS =~ .*"${HOST_ENV}".* ]] ; then
-  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, local"
+  echo "The value for HOST_ENV (third argument) must be one of: OpenStack, AWS, Azure, local"
   exit 1;
 fi
 
