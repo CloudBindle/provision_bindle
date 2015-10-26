@@ -1,4 +1,4 @@
 #! /bin/bash
 
 
-nohup java -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.containerProvisioner.ContainerProvisionerThreads  $@ &> provisioner.out
+nohup java -DCONSONANCE_LOG_FILE=/home/ubuntu/arch3/logs/Provisioner.log -cp /home/ubuntu/arch3/pancancer.jar info.pancancer.arch3.containerProvisioner.ContainerProvisionerThreads  $@ &>> /home/ubuntu/arch3/logs/provisioner.out
