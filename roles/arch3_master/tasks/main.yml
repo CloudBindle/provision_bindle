@@ -11,6 +11,7 @@
     - arch3/bin
     - arch3/config
     - .youxia
+    - arch3/logs
 
 #######################
 # RabbitMQ
