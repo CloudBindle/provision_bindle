@@ -83,7 +83,7 @@ sudo service sensu-api start
 sudo service sensu-client start
 sudo service postgresql start
 sudo service uchiwa start
-
+sudo cron -f &
 echo  "[END: $(date +%Y-%m-%d_%H:%M:%S)]"
 exec 1>&3 2>&4
 
