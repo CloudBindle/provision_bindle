@@ -86,7 +86,7 @@ ENVS="OPENSTACK AWS AZURE local"
 
 # There are three options for environment: AWS, OPENSTACK, local
 if [[ ! $ENVS =~ .*"${HOST_ENV}".* ]] ; then
-  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, local"
+  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, AZURE, local"
   exit 1;
 fi
 
