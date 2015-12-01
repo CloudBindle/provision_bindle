@@ -82,11 +82,11 @@ fi
 
 WORKER_NAME=e2e_test_node
 
-ENVS="OpenStack AWS Azure local"
+ENVS="OPENSTACK AWS AZURE local"
 
 # There are three options for environment: AWS, OPENSTACK, local
 if [[ ! $ENVS =~ .*"${HOST_ENV}".* ]] ; then
-  echo "The value for HOST_ENV (third argument) must be one of: OpenStack, AWS, Azure, local"
+  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, local"
   exit 1;
 fi
 
