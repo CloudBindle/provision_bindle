@@ -142,7 +142,7 @@ ARGS_MESSAGE
 
 # If running the container on a workstation, the Public IP address should be that of the host machine, so this needs to be passed into the container as a variable.
 # This also applies in Azure because there's no easy way to get that information out of their metadata API.
-if [ "$HOST_ENV" = "local" || "$HOST_ENV" = "AZURE"] ; then
+if [[ "$HOST_ENV" = "local" || "$HOST_ENV" = "AZURE" ]] ; then
   PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
   if [ -n $PUBLIC_IP_ADDRESS ] ; then
     PUBLIC_IP_ADDRESS_STR="\n\t-e HOST_PUBLIC_IP_ADDRESS=$PUBLIC_IP_ADDRESS"
