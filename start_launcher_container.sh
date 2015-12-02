@@ -41,7 +41,7 @@ This script will start up pancancer_launcher.
 Options are:
   -p, --pem_key - The path to the pem key file you want to use to start up new workers.
   -i, --image_version - The version of pancancer_launcher you want to run.
-  -e, --host_env - The host environment you are running in (Either "AWS" or "OPENSTACK"). If you do not specify a value, "AWS" will be defaulted.
+  -e, --host_env - The host environment you are running in (Either "AWS", "OpenStack", or "Azure"). If you do not specify a value, "AWS" will be defaulted.
   -t, --test_mode - Run in test mode (lauches workers immediately when container starts). Defaults to "false"
   -f, --fleet_name - The name of the fleet of workers that will be managed by this launcher. If you do not specify one, a random name will be generated.
   --target_env - Only used when running in test mode.
@@ -82,11 +82,11 @@ fi
 
 WORKER_NAME=e2e_test_node
 
-ENVS="OPENSTACK AWS local"
+ENVS="OPENSTACK AWS AZURE local"
 
 # There are three options for environment: AWS, OPENSTACK, local
 if [[ ! $ENVS =~ .*"${HOST_ENV}".* ]] ; then
-  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, local"
+  echo "The value for HOST_ENV (third argument) must be one of: OPENSTACK, AWS, AZURE, local"
   exit 1;
 fi
 
@@ -139,8 +139,10 @@ Specified arguments are:
   Fleet name:       $FLEET_NAME
   Test mode:        $E2E_TEST
 ARGS_MESSAGE
+
 # If running the container on a workstation, the Public IP address should be that of the host machine, so this needs to be passed into the container as a variable.
-if [ "$HOST_ENV" = "local" ] ; then
+# This also applies in Azure because there's no easy way to get that information out of their metadata API.
+if [[ "$HOST_ENV" = "local" || "$HOST_ENV" = "AZURE" ]] ; then
   PUBLIC_IP_ADDRESS=$(ip addr show eth0 | grep "inet " | sed 's/.*inet \(.*\)\/.*/\1/g')
   if [ -n $PUBLIC_IP_ADDRESS ] ; then
     PUBLIC_IP_ADDRESS_STR="\n\t-e HOST_PUBLIC_IP_ADDRESS=$PUBLIC_IP_ADDRESS"

@@ -34,12 +34,14 @@ if [ "$HOST_ENV" == "AWS" ] ; then
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   python ~/update_security_groups.py $HOST_INSTANCE_ID $PUBLIC_IP_ADDRESS
-elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
+elif [ "$HOST_ENV" == "OpenStack" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   # TODO: OpenStack could potential use a mounted drive for metadata instead of a service running at an IP address.
+# elif [ "$HOST_ENV" == "Azure" ] ; then
+# TODO: ...fill in the details for Azure
 else
 #if [ -z $IP_ADDRESS] ; then
   # Used when running the container on a workstation, not in a cloud.
@@ -112,6 +114,26 @@ sleep 2
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
 # http://wiki.bash-hackers.org/syntax/pe#use_a_default_value
+
+if [ "$HOST_ENV" == "AZURE" ] ; then
+  cat <<AZURE_MESSAGE
+*****************************
+*** ATTENTION AZURE USERS ***
+
+If you need to generate a new certificate for Azure and a new Java KeyStore, you
+can do this with the following command:
+
+bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh
+
+If you already have the necessary files, you can simply copy them into
+/home/ubuntu/.keystore/
+
+*****************************
+
+AZURE_MESSAGE
+  sleep 2
+fi
+
 CMD=${1-bash}
 # shift will shift all arguments by 1, so *now* $1 is the first argument to the command that was earlier in $1
 shift
