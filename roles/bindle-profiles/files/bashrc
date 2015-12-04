@@ -57,7 +57,7 @@ if [ -n "$force_color_prompt" ]; then
 fi
 #[[ -d /.dockerenv ]] || IN_DOCKER="-INDOCKER"
 if [ "$color_prompt" = yes ]; then
-    PS1='\[\e[00;33m\][LAUNCHER \[\e[01m\]\[\e[4;33m\]$PANCANCER_LAUNCHER_VERSION\[\e[00m\]\[\e[01;33m\]] ${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
+    PS1='\[\e[00;33m\][LAUNCHER \[\e[01m\]\[\e[4;33m\]$PANCANCER_LAUNCHER_VERSION\[\e[00m\]\[\e[00;33m\]] ${debian_chroot:+($debian_chroot)}\[\e[00;32m\]\u@\h\[\e[00m\]:\[\e[01;34m\]\w\[\e[00m\]\$ '
 else
     PS1='[LAUNCHER $PANCANCER_LAUNCHER_VERSION] ${debian_chroot:+($debian_chroot)}\u@\h:\w\$ '
 fi
