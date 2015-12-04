@@ -34,12 +34,14 @@ if [ "$HOST_ENV" == "AWS" ] ; then
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   python ~/update_security_groups.py $HOST_INSTANCE_ID $PUBLIC_IP_ADDRESS
-elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
+elif [ "$HOST_ENV" == "OpenStack" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   # TODO: OpenStack could potential use a mounted drive for metadata instead of a service running at an IP address.
+# elif [ "$HOST_ENV" == "Azure" ] ; then
+# TODO: ...fill in the details for Azure
 else
 #if [ -z $IP_ADDRESS] ; then
   # Used when running the container on a workstation, not in a cloud.
@@ -108,6 +110,24 @@ Use the command "pancancer -h" to get details on various pancancer commands.
 
 HELP_MESSAGE
 sleep 2
+
+if [ "$HOST_ENV" == "AZURE" ] ; then
+  [[ -d ~/.keystore ]] || mkdir ~/.keystore
+  if [ ! -f ~/.keystore/*.jks ] ; then
+cat <<AZURE_MESSAGE
+
+*** ATTENTION AZURE USERS ***
+
+Management certificate create script will now be run.
+If you already have files you wish to use for this purpose,
+simply compy them in to ~/.keystore and overwrite the generated files.
+
+AZURE_MESSAGE
+    sleep 1
+    bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh
+    sleep 1
+  fi
+fi
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
