@@ -110,30 +110,28 @@ Use the command "pancancer -h" to get details on various pancancer commands.
 
 HELP_MESSAGE
 sleep 2
+
+if [ "$HOST_ENV" == "AZURE" ] ; then
+  [[ -d ~/.keystore ]] || mkdir ~/.keystore
+  if [ ! -f ~/.keystore/*.jks ] ; then
+cat <<AZURE_MESSAGE
+
+*** ATTENTION AZURE USERS ***
+
+Management certificate create script will now be run.
+If you already have files you wish to use for this purpose,
+simply compy them in to ~/.keystore and overwrite the generated files.
+
+AZURE_MESSAGE
+    sleep 1
+    bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh
+    sleep 1
+  fi
+fi
 # Execute the argument passed in from the Dockerfile
 # If no argument was passed in, then bash will be executed.
 # I know this syntax is a little less common, read more about it here:
 # http://wiki.bash-hackers.org/syntax/pe#use_a_default_value
-
-if [ "$HOST_ENV" == "AZURE" ] ; then
-  cat <<AZURE_MESSAGE
-*****************************
-*** ATTENTION AZURE USERS ***
-
-If you need to generate a new certificate for Azure and a new Java KeyStore, you
-can do this with the following command:
-
-bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh
-
-If you already have the necessary files, you can simply copy them into
-/home/ubuntu/.keystore/
-
-*****************************
-
-AZURE_MESSAGE
-  sleep 2
-fi
-
 CMD=${1-bash}
 # shift will shift all arguments by 1, so *now* $1 is the first argument to the command that was earlier in $1
 shift
