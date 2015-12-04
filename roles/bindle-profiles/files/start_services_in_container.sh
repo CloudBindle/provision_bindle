@@ -124,7 +124,7 @@ simply compy them in to ~/.keystore and overwrite the generated files.
 
 AZURE_MESSAGE
     sleep 1
-    $(bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh)
+    bash /home/ubuntu/arch3/cli/scripts/azure/create_management_certs.sh
     sleep 1
   fi
 fi
