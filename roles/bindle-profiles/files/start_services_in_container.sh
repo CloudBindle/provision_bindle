@@ -34,7 +34,7 @@ if [ "$HOST_ENV" == "AWS" ] ; then
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
   export SENSU_SERVER_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/local-ipv4)
   python ~/update_security_groups.py $HOST_INSTANCE_ID $PUBLIC_IP_ADDRESS
-elif [ "$HOST_ENV" == "OpenStack" ] ; then
+elif [ "$HOST_ENV" == "OPENSTACK" ] ; then
   # Looks like the OpenStack metadata IP address is the same as AWS
   echo "Querying OpenStack for public IP address of this machine..."
   export PUBLIC_IP_ADDRESS=$(curl http://169.254.169.254/latest/meta-data/public-ipv4)
